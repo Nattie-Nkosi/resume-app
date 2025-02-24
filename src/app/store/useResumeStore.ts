@@ -14,11 +14,16 @@ interface ResumeStore {
 
 const initialState: ResumeData = {
   personalInfo: {
+    title: '',
     fullName: '',
     email: '',
     phone: '',
     location: '',
-    summary: ''
+    summary: '',
+    linkedin: '',
+    github: '',
+    portfolio: '',
+    additionalLink: ''
   },
   experiences: [{
     company: '',

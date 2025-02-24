@@ -4,6 +4,7 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import type { ResumeData } from "@/types/resume";
 import { formatDate } from "@/lib/utils";
+import { LinkedinIcon, GithubIcon, Globe, Link2 } from "lucide-react";
 
 interface PreviewProps {
   data: ResumeData;
@@ -20,17 +21,74 @@ const Preview: React.FC<PreviewProps> = ({ data }) => {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             {personalInfo.fullName}
           </h1>
-          <div className="text-sm text-gray-600 space-y-1">
-            <div className="flex items-center gap-2">
+          {personalInfo.title && (
+            <h2 className="text-xl text-gray-600 mb-3">{personalInfo.title}</h2>
+          )}
+          <div className="text-sm text-gray-600 space-y-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span>{personalInfo.email}</span>
               <span>•</span>
               <span>{personalInfo.phone}</span>
               <span>•</span>
               <span>{personalInfo.location}</span>
             </div>
+            {/* Social Links */}
+            {(personalInfo.linkedin ||
+              personalInfo.github ||
+              personalInfo.portfolio ||
+              personalInfo.additionalLink) && (
+              <div className="flex items-center gap-4 flex-wrap pt-2">
+                {personalInfo.linkedin && (
+                  <a
+                    href={personalInfo.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-gray-600 hover:text-gray-900"
+                  >
+                    <LinkedinIcon className="w-4 h-4" />
+                    <span>LinkedIn</span>
+                  </a>
+                )}
+                {personalInfo.github && (
+                  <a
+                    href={personalInfo.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-gray-600 hover:text-gray-900"
+                  >
+                    <GithubIcon className="w-4 h-4" />
+                    <span>GitHub</span>
+                  </a>
+                )}
+                {personalInfo.portfolio && (
+                  <a
+                    href={personalInfo.portfolio}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-gray-600 hover:text-gray-900"
+                  >
+                    <Globe className="w-4 h-4" />
+                    <span>Portfolio</span>
+                  </a>
+                )}
+                {personalInfo.additionalLink && (
+                  <a
+                    href={personalInfo.additionalLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-gray-600 hover:text-gray-900"
+                  >
+                    <Link2 className="w-4 h-4" />
+                    <span>Website</span>
+                  </a>
+                )}
+              </div>
+            )}
           </div>
           {personalInfo.summary && (
-            <p className="mt-4 text-gray-700">{personalInfo.summary}</p>
+            <p className="mt-4 text-gray-700 leading-relaxed">
+              {personalInfo.summary}
+            </p>
           )}
         </div>
 
@@ -43,14 +101,14 @@ const Preview: React.FC<PreviewProps> = ({ data }) => {
             <div className="space-y-4">
               {experiences.map((exp, index) => (
                 <div key={index} className="border-b last:border-0 pb-4">
-                  <div className="flex justify-between items-start">
+                  <div className="flex justify-between items-start flex-wrap gap-2">
                     <div>
                       <h3 className="font-medium text-gray-900">
                         {exp.position}
                       </h3>
                       <div className="text-gray-600">{exp.company}</div>
                     </div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-gray-500 whitespace-nowrap">
                       {formatDate(exp.startDate)} -{" "}
                       {exp.endDate ? formatDate(exp.endDate) : "Present"}
                     </div>
@@ -58,7 +116,7 @@ const Preview: React.FC<PreviewProps> = ({ data }) => {
                   <div className="text-sm text-gray-600 mt-1">
                     {exp.location}
                   </div>
-                  <p className="mt-2 text-gray-700 whitespace-pre-line">
+                  <p className="mt-2 text-gray-700 whitespace-pre-line leading-relaxed">
                     {exp.description}
                   </p>
                 </div>
@@ -76,14 +134,14 @@ const Preview: React.FC<PreviewProps> = ({ data }) => {
             <div className="space-y-4">
               {education.map((edu, index) => (
                 <div key={index} className="border-b last:border-0 pb-4">
-                  <div className="flex justify-between items-start">
+                  <div className="flex justify-between items-start flex-wrap gap-2">
                     <div>
                       <h3 className="font-medium text-gray-900">
                         {edu.degree} in {edu.field}
                       </h3>
                       <div className="text-gray-600">{edu.institution}</div>
                     </div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-gray-500 whitespace-nowrap">
                       {formatDate(edu.startDate)} -{" "}
                       {edu.endDate ? formatDate(edu.endDate) : "Present"}
                     </div>
@@ -97,7 +155,9 @@ const Preview: React.FC<PreviewProps> = ({ data }) => {
                     </div>
                   )}
                   {edu.achievements && (
-                    <p className="mt-2 text-gray-700">{edu.achievements}</p>
+                    <p className="mt-2 text-gray-700 leading-relaxed">
+                      {edu.achievements}
+                    </p>
                   )}
                 </div>
               ))}

@@ -22,14 +22,21 @@ import {
   FormMessage,
   FormDescription,
 } from "@/components/ui/form";
+import { LinkedinIcon, GithubIcon, Globe, Link2 } from "lucide-react";
 
-// Validation regex patterns
+// Validation patterns
 const saPhoneRegex = /^\+27[0-9]{9}$/;
 const nameRegex = /^[a-zA-Z\s'-]+$/;
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const locationRegex = /^[a-zA-Z\s',.-]+$/;
+//const urlRegex = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
 
 const formSchema = z.object({
+  title: z
+    .string()
+    .min(2, { message: "Title must be at least 2 characters" })
+    .max(50, { message: "Title cannot exceed 50 characters" }),
+
   fullName: z
     .string()
     .min(2, { message: "Name must be at least 2 characters" })
@@ -37,15 +44,14 @@ const formSchema = z.object({
     .regex(nameRegex, {
       message: "Name can only contain letters, spaces, hyphens and apostrophes",
     })
-    .transform((value) => {
-      // Capitalize each word
-      return value
+    .transform((value) =>
+      value
         .split(" ")
         .map(
           (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
         )
-        .join(" ");
-    }),
+        .join(" ")
+    ),
 
   email: z
     .string()
@@ -53,7 +59,7 @@ const formSchema = z.object({
     .regex(emailRegex, {
       message: "Please enter a valid email format",
     })
-    .toLowerCase(), // Transform email to lowercase
+    .toLowerCase(),
 
   phone: z
     .string()
@@ -74,15 +80,6 @@ const formSchema = z.object({
     .regex(locationRegex, {
       message:
         "Location can only contain letters, spaces, and basic punctuation",
-    })
-    .transform((value) => {
-      // Capitalize each word
-      return value
-        .split(" ")
-        .map(
-          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-        )
-        .join(" ");
     }),
 
   summary: z
@@ -92,6 +89,30 @@ const formSchema = z.object({
     .refine((value) => value.trim().split(/\s+/).length >= 10, {
       message: "Summary should contain at least 10 words",
     }),
+
+  // Social Media and Website Links
+  linkedin: z
+    .string()
+    .url({ message: "Please enter a valid URL" })
+    .optional()
+    .or(z.literal("")),
+  github: z
+    .string()
+    .url({ message: "Please enter a valid URL" })
+    .optional()
+    .or(z.literal("")),
+
+  portfolio: z
+    .string()
+    .url({ message: "Please enter a valid URL" })
+    .optional()
+    .or(z.literal("")),
+
+  additionalLink: z
+    .string()
+    .url({ message: "Please enter a valid URL" })
+    .optional()
+    .or(z.literal("")),
 });
 
 interface PersonalInfoProps {
@@ -102,11 +123,16 @@ interface PersonalInfoProps {
 const PersonalInfo: React.FC<PersonalInfoProps> = ({
   onSubmit,
   defaultValues = {
+    title: "",
     fullName: "",
     email: "",
     phone: "",
     location: "",
     summary: "",
+    linkedin: "",
+    github: "",
+    portfolio: "",
+    additionalLink: "",
   },
 }) => {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -114,7 +140,6 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
     defaultValues,
   });
 
-  // Format phone number while typing
   const formatPhoneNumber = (value: string) => {
     let formatted = value.replace(/[^\d+]/g, "");
     if (!formatted.startsWith("+27") && formatted.length > 0) {
@@ -126,7 +151,6 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
     return formatted;
   };
 
-  // Watch form changes and update parent component
   useEffect(() => {
     const subscription = form.watch((value) => {
       if (value) {
@@ -136,7 +160,6 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
     return () => subscription.unsubscribe();
   }, [form, form.watch, onSubmit]);
 
-  // Get remaining characters for summary
   const summaryLength = form.watch("summary")?.length || 0;
   const remainingChars = 500 - summaryLength;
 
@@ -149,6 +172,28 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
       <CardContent>
         <Form {...form}>
           <form className="space-y-4">
+            {/* Title Field */}
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Professional Title</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="e.g., Senior Software Engineer"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Your current professional title or role
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Basic Info */}
             <FormField
               control={form.control}
               name="fullName"
@@ -158,9 +203,6 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
                   <FormControl>
                     <Input placeholder="John Doe" {...field} />
                   </FormControl>
-                  <FormDescription>
-                    Enter your full name as it should appear on your resume
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -178,14 +220,8 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
                         type="email"
                         placeholder="john@example.com"
                         {...field}
-                        onChange={(e) =>
-                          field.onChange(e.target.value.toLowerCase())
-                        }
                       />
                     </FormControl>
-                    <FormDescription>
-                      Use a professional email address
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -207,9 +243,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
                         }}
                       />
                     </FormControl>
-                    <FormDescription>
-                      South African format: +27XXXXXXXXX
-                    </FormDescription>
+                    <FormDescription>Format: +27XXXXXXXXX</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -225,12 +259,95 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
                   <FormControl>
                     <Input placeholder="Cape Town, South Africa" {...field} />
                   </FormControl>
-                  <FormDescription>Enter your city and country</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
+            {/* Social Media and Websites */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Online Presence</h3>
+              <div className="grid gap-4 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="linkedin"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2">
+                        <LinkedinIcon className="w-4 h-4" />
+                        LinkedIn
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="https://linkedin.com/in/..."
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="github"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2">
+                        <GithubIcon className="w-4 h-4" />
+                        GitHub
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="https://github.com/..."
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="portfolio"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2">
+                        <Globe className="w-4 h-4" />
+                        Portfolio Website
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="https://your-portfolio.com"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="additionalLink"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2">
+                        <Link2 className="w-4 h-4" />
+                        Additional Link
+                      </FormLabel>
+                      <FormControl>
+                        <Input placeholder="https://..." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* Summary */}
             <FormField
               control={form.control}
               name="summary"
