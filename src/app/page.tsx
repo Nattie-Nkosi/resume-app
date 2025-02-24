@@ -2,10 +2,15 @@
 
 import React from "react";
 import PersonalInfo from "@/components/personal-info";
+import Experience from "@/components/experience";
 
 export default function Home() {
   const handlePersonalInfoSubmit = (data: any) => {
     console.log("Personal Info updated:", data);
+  };
+
+  const handleExperienceSubmit = (data: any) => {
+    console.log("Experience updated:", data);
   };
 
   return (
@@ -23,6 +28,21 @@ export default function Home() {
         }}
       />
 
+      <Experience
+        onSubmit={handleExperienceSubmit}
+        defaultValues={{
+          experiences: [
+            {
+              company: "",
+              position: "",
+              startDate: "",
+              endDate: "",
+              description: "",
+              location: "",
+            },
+          ],
+        }}
+      />
       {/* Other components will be added here */}
     </div>
   );
