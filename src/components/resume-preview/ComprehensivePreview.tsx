@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,6 +18,7 @@ import {
   FileText,
   Palette,
   Layout,
+  Loader2,
 } from "lucide-react";
 import {
   Tooltip,
@@ -32,7 +34,11 @@ import {
   ElegantLayout,
   ModernLayout,
 } from "./layout";
-import { copyToClipboard, handlePrintDocument } from "./utils/preview-helpers";
+import {
+  copyToClipboard,
+  handlePrintDocument,
+  exportResumeToPDF,
+} from "./utils/preview-helpers";
 
 interface ComprehensivePreviewProps {
   data: ResumeData;
@@ -43,7 +49,9 @@ const ComprehensivePreview: React.FC<ComprehensivePreviewProps> = ({
 }) => {
   const [selectedTheme, setSelectedTheme] = useState<ThemeKey>("classic");
   const [selectedLayout, setSelectedLayout] = useState<LayoutType>("standard");
+  const [isExporting, setIsExporting] = useState(false);
   const resumeRef = useRef<HTMLDivElement>(null);
+  const printRef = useRef<HTMLDivElement>(null);
   const theme: ThemeStyles = colorThemes[selectedTheme];
 
   const handleCopyToClipboard = () => {
@@ -56,6 +64,48 @@ const ComprehensivePreview: React.FC<ComprehensivePreviewProps> = ({
         .catch((err) => {
           console.error("Failed to copy: ", err);
         });
+    }
+  };
+
+  const handleExportPDF = async () => {
+    // Try both refs since printRef might not be available
+    let element = printRef.current || resumeRef.current;
+
+    if (!element) {
+      console.log("Initial refs not found, looking for any resume element");
+      // Fallback to find any resume element
+      element =
+        (document.querySelector(".pdf-preview-container") as HTMLDivElement) ||
+        (document.querySelector(".bg-white.shadow-lg") as HTMLDivElement);
+    }
+
+    if (!element) {
+      console.error("Could not find any printable element");
+      alert("Unable to generate PDF. Please try again.");
+      return;
+    }
+
+    try {
+      setIsExporting(true);
+
+      // Add a delay to ensure the element is fully rendered
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Generate filename based on user's name and current date
+      const fullName = data.personalInfo.fullName || "Resume";
+      const sanitizedName = fullName.replace(/[^a-z0-9]/gi, "_").toLowerCase();
+      const date = new Date().toISOString().slice(0, 10);
+      const filename = `${sanitizedName}_resume_${date}.pdf`;
+
+      console.log("Found element for export:", element);
+      // Use the new optimized export function
+      await exportResumeToPDF(element, filename);
+      console.log("PDF export completed successfully");
+    } catch (error) {
+      console.error("Failed to export PDF:", error);
+      alert("Failed to export PDF. Please try again.");
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -133,9 +183,18 @@ const ComprehensivePreview: React.FC<ComprehensivePreviewProps> = ({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button>
-                  <Download className="mr-2 h-4 w-4" />
-                  Export
+                <Button onClick={handleExportPDF} disabled={isExporting}>
+                  {isExporting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Exporting...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="mr-2 h-4 w-4" />
+                      Export
+                    </>
+                  )}
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -173,7 +232,10 @@ const ComprehensivePreview: React.FC<ComprehensivePreviewProps> = ({
         </TabsContent>
         <TabsContent value="print-view">
           <div className="bg-gray-100 p-8 rounded-lg">
-            <div className="bg-white shadow-md w-[21cm] h-[29.7cm] mx-auto overflow-hidden">
+            <div
+              className="bg-white shadow-md pdf-preview-container pdf-links pdf-content pdf-image-quality"
+              ref={printRef}
+            >
               {selectedLayout === "standard" && (
                 <StandardLayout data={data} theme={theme} isPrintView={true} />
               )}
@@ -194,7 +256,7 @@ const ComprehensivePreview: React.FC<ComprehensivePreviewProps> = ({
         </TabsContent>
       </Tabs>
 
-      <div className="hidden print:block">
+      <div className="hidden print:block print-container">
         {selectedLayout === "standard" && (
           <StandardLayout data={data} theme={theme} isPrintView={true} />
         )}
