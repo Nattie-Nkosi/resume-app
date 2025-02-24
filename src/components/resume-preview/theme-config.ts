@@ -1,7 +1,17 @@
 // /components/resume-preview/theme-config.ts
 
+// Define the theme properties type
+export interface ThemeStyles {
+  primary: string;
+  secondary: string;
+  accent: string;
+  border: string;
+  heading: string;
+  link: string;
+}
+
 // Color themes
-export const colorThemes = {
+export const colorThemes: Record<string, ThemeStyles> = {
   classic: {
     primary: "text-gray-900",
     secondary: "text-gray-600",

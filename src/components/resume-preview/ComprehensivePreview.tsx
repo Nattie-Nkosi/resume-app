@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -26,7 +25,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import { colorThemes, ThemeKey, LayoutType } from "./theme-config";
+import { colorThemes, ThemeKey, LayoutType, ThemeStyles } from "./theme-config";
 import {
   StandardLayout,
   CompactLayout,
@@ -45,7 +44,7 @@ const ComprehensivePreview: React.FC<ComprehensivePreviewProps> = ({
   const [selectedTheme, setSelectedTheme] = useState<ThemeKey>("classic");
   const [selectedLayout, setSelectedLayout] = useState<LayoutType>("standard");
   const resumeRef = useRef<HTMLDivElement>(null);
-  const theme = colorThemes[selectedTheme];
+  const theme: ThemeStyles = colorThemes[selectedTheme];
 
   const handleCopyToClipboard = () => {
     const text = resumeRef.current?.innerText;

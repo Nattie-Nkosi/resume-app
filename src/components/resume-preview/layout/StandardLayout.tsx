@@ -6,10 +6,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import type { ResumeData } from "@/types/resume";
 import { formatDate } from "@/lib/utils";
 import { LinkedinIcon, GithubIcon, Globe, Link2 } from "lucide-react";
+import { ThemeStyles } from "../theme-config";
 
 interface StandardLayoutProps {
   data: ResumeData;
-  theme: any;
+  theme: ThemeStyles;
   isPrintView?: boolean;
 }
 
