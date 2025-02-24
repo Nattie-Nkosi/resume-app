@@ -21,22 +21,68 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
-import { Plus, Trash2 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Plus, Trash2, Info } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+
+// Validation patterns
+const institutionRegex = /^[a-zA-Z0-9\s.,&'-]+$/;
+const degreeRegex = /^[a-zA-Z\s.,&'-]+$/;
+const fieldRegex = /^[a-zA-Z\s.,&'-]+$/;
+const locationRegex = /^[a-zA-Z\s',.-]+$/;
+const gpaRegex = /^(\d+(\.\d+)?|\d+(\.\d+)?\/\d+(\.\d+)?)$/;
 
 const educationSchema = z.object({
   education: z.array(
     z.object({
       institution: z
         .string()
-        .min(2, { message: "Institution name is required" }),
-      degree: z.string().min(2, { message: "Degree/Certificate is required" }),
-      field: z.string().min(2, { message: "Field of study is required" }),
+        .min(2, { message: "Institution name is required" })
+        .max(100, { message: "Institution name is too long" })
+        .regex(institutionRegex, {
+          message: "Institution name contains invalid characters",
+        }),
+      degree: z
+        .string()
+        .min(2, { message: "Degree/Certificate is required" })
+        .max(100, { message: "Degree/Certificate is too long" })
+        .regex(degreeRegex, {
+          message: "Degree contains invalid characters",
+        }),
+      field: z
+        .string()
+        .min(2, { message: "Field of study is required" })
+        .max(100, { message: "Field of study is too long" })
+        .regex(fieldRegex, {
+          message: "Field contains invalid characters",
+        }),
+      location: z
+        .string()
+        .min(2, { message: "Location is required" })
+        .max(100, { message: "Location is too long" })
+        .regex(locationRegex, {
+          message: "Location contains invalid characters",
+        }),
       startDate: z.string().min(1, { message: "Start date is required" }),
       endDate: z.string(),
-      location: z.string().min(2, { message: "Location is required" }),
-      gpa: z.string().optional(),
-      achievements: z.string().optional(),
+      currentlyEnrolled: z.boolean().optional(),
+      gpa: z
+        .string()
+        .regex(gpaRegex, { message: "Invalid GPA format" })
+        .optional()
+        .or(z.literal("")),
+      achievements: z
+        .string()
+        .max(1000, { message: "Achievements text is too long" })
+        .optional()
+        .or(z.literal("")),
     })
   ),
 });
@@ -61,6 +107,7 @@ const Education: React.FC<EducationProps> = ({
         location: "",
         gpa: "",
         achievements: "",
+        currentlyEnrolled: false,
       },
     ],
   },
@@ -83,13 +130,41 @@ const Education: React.FC<EducationProps> = ({
       }
     });
     return () => subscription.unsubscribe();
-  }, [form, form.watch, onSubmit]);
+  }, [form, onSubmit]);
+
+  // Handle currently enrolled checkbox
+  const handleCurrentlyEnrolledChange = (index: number, checked: boolean) => {
+    if (checked) {
+      form.setValue(`education.${index}.endDate`, "");
+    }
+  };
 
   return (
     <Card className="mb-8">
       <CardHeader>
-        <CardTitle>Education</CardTitle>
-        <CardDescription>Add your educational background</CardDescription>
+        <CardTitle className="flex items-center">
+          Education
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0 ml-2">
+                  <Info className="h-4 w-4" />
+                  <span className="sr-only">Info</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="max-w-xs">
+                  List your education in reverse chronological order (most
+                  recent first). Include degrees, certifications, and relevant
+                  coursework.
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </CardTitle>
+        <CardDescription>
+          Add your educational background in reverse chronological order
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -122,6 +197,9 @@ const Education: React.FC<EducationProps> = ({
                           {...field}
                         />
                       </FormControl>
+                      <FormDescription>
+                        The name of the educational institution
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -140,6 +218,9 @@ const Education: React.FC<EducationProps> = ({
                             {...field}
                           />
                         </FormControl>
+                        <FormDescription>
+                          Type of degree or certification
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -157,6 +238,9 @@ const Education: React.FC<EducationProps> = ({
                             {...field}
                           />
                         </FormControl>
+                        <FormDescription>
+                          Your major or concentration
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -172,6 +256,9 @@ const Education: React.FC<EducationProps> = ({
                       <FormControl>
                         <Input placeholder="City, Country" {...field} />
                       </FormControl>
+                      <FormDescription>
+                        Where the institution is located
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -192,19 +279,51 @@ const Education: React.FC<EducationProps> = ({
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name={`education.${index}.endDate`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>End Date</FormLabel>
-                        <FormControl>
-                          <Input type="date" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div>
+                    <FormField
+                      control={form.control}
+                      name={`education.${index}.endDate`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>End Date</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="date"
+                              {...field}
+                              disabled={form.watch(
+                                `education.${index}.currentlyEnrolled`
+                              )}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name={`education.${index}.currentlyEnrolled`}
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 mt-2">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={(checked) => {
+                                field.onChange(checked);
+                                handleCurrentlyEnrolledChange(
+                                  index,
+                                  checked as boolean
+                                );
+                              }}
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel>Currently enrolled</FormLabel>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </div>
 
                 <FormField
@@ -216,6 +335,9 @@ const Education: React.FC<EducationProps> = ({
                       <FormControl>
                         <Input placeholder="e.g., 3.8/4.0" {...field} />
                       </FormControl>
+                      <FormDescription>
+                        Format as X.XX or X.XX/Y.YY
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -236,6 +358,10 @@ const Education: React.FC<EducationProps> = ({
                           {...field}
                         />
                       </FormControl>
+                      <FormDescription>
+                        Include honors, awards, relevant coursework, or
+                        extracurricular activities
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -257,6 +383,7 @@ const Education: React.FC<EducationProps> = ({
                   location: "",
                   gpa: "",
                   achievements: "",
+                  currentlyEnrolled: false,
                 })
               }
             >
