@@ -79,7 +79,7 @@ const Experience: React.FC<ExperienceProps> = ({
       }
     });
     return () => subscription.unsubscribe();
-  }, [form.watch, onSubmit]);
+  }, [form, form.watch, onSubmit]);
 
   return (
     <Card className="mb-8">
