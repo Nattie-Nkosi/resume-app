@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import * as z from "zod";
@@ -71,6 +71,16 @@ const Experience: React.FC<ExperienceProps> = ({
     control: form.control,
   });
 
+  // Watch form changes and update parent component
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      if (value.experiences) {
+        onSubmit(value as ExperienceFormValues);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form.watch, onSubmit]);
+
   return (
     <Card className="mb-8">
       <CardHeader>
@@ -79,7 +89,7 @@ const Experience: React.FC<ExperienceProps> = ({
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onChange={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form className="space-y-4">
             {fields.map((field, index) => (
               <div key={field.id} className="p-4 border rounded-lg space-y-4">
                 <div className="flex justify-between items-center">
@@ -88,6 +98,7 @@ const Experience: React.FC<ExperienceProps> = ({
                   </h3>
                   {index > 0 && (
                     <Button
+                      type="button"
                       variant="destructive"
                       size="icon"
                       onClick={() => remove(index)}

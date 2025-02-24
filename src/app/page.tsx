@@ -7,90 +7,34 @@ import Education from "@/components/education";
 import Skills from "@/components/skills";
 import Preview from "@/components/preview";
 import { Button } from "@/components/ui/button";
-import type { ResumeData } from "@/types/resume";
+import { useResumeStore } from "./store/useResumeStore";
 
 export default function Home() {
-  const [resumeData, setResumeData] = useState<ResumeData>({
-    personalInfo: {
-      fullName: "",
-      email: "",
-      phone: "",
-      location: "",
-      summary: "",
-    },
-    experiences: [
-      {
-        company: "",
-        position: "",
-        location: "",
-        startDate: "",
-        endDate: "",
-        description: "",
-      },
-    ],
-    education: [
-      {
-        institution: "",
-        degree: "",
-        field: "",
-        location: "",
-        startDate: "",
-        endDate: "",
-        gpa: "",
-        achievements: "",
-      },
-    ],
-    skillGroups: [
-      {
-        category: "Technical" as
-          | "Technical"
-          | "Soft Skills"
-          | "Languages"
-          | "Tools"
-          | "Frameworks"
-          | "Other",
-        skills: [{ name: "", proficiency: "Intermediate" }],
-      },
-    ],
-  });
-
   const [showPreview, setShowPreview] = useState(false);
-
-  const handlePersonalInfoSubmit = (data: any) => {
-    setResumeData((prev) => ({
-      ...prev,
-      personalInfo: data,
-    }));
-  };
-
-  const handleExperienceSubmit = (data: any) => {
-    setResumeData((prev) => ({
-      ...prev,
-      experiences: data.experiences,
-    }));
-  };
-
-  const handleEducationSubmit = (data: any) => {
-    setResumeData((prev) => ({
-      ...prev,
-      education: data.education,
-    }));
-  };
-
-  const handleSkillsSubmit = (data: any) => {
-    setResumeData((prev) => ({
-      ...prev,
-      skillGroups: data.skillGroups,
-    }));
-  };
+  const {
+    resumeData,
+    updatePersonalInfo,
+    updateExperiences,
+    updateEducation,
+    updateSkills,
+    resetStore,
+  } = useResumeStore();
 
   return (
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Resume Builder</h1>
-        <Button onClick={() => setShowPreview(!showPreview)} variant="outline">
-          {showPreview ? "Edit Resume" : "Preview Resume"}
-        </Button>
+        <div className="flex gap-4">
+          <Button
+            onClick={() => setShowPreview(!showPreview)}
+            variant="outline"
+          >
+            {showPreview ? "Edit Resume" : "Preview Resume"}
+          </Button>
+          <Button onClick={resetStore} variant="destructive">
+            Reset
+          </Button>
+        </div>
       </div>
 
       {showPreview ? (
@@ -98,22 +42,22 @@ export default function Home() {
       ) : (
         <div className="max-w-4xl mx-auto">
           <PersonalInfo
-            onSubmit={handlePersonalInfoSubmit}
+            onSubmit={updatePersonalInfo}
             defaultValues={resumeData.personalInfo}
           />
 
           <Experience
-            onSubmit={handleExperienceSubmit}
+            onSubmit={({ experiences }) => updateExperiences(experiences)}
             defaultValues={{ experiences: resumeData.experiences }}
           />
 
           <Education
-            onSubmit={handleEducationSubmit}
+            onSubmit={({ education }) => updateEducation(education)}
             defaultValues={{ education: resumeData.education }}
           />
 
           <Skills
-            onSubmit={handleSkillsSubmit}
+            onSubmit={({ skillGroups }) => updateSkills(skillGroups)}
             defaultValues={{ skillGroups: resumeData.skillGroups }}
           />
         </div>
