@@ -24,8 +24,14 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Trash2, Link } from "lucide-react";
+import { Plus, Trash2, Link, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const projectSchema = z.object({
   projects: z.array(
@@ -123,7 +129,25 @@ const Projects: React.FC<ProjectsProps> = ({
   return (
     <Card className="mb-8">
       <CardHeader>
-        <CardTitle>Projects</CardTitle>
+        <CardTitle className="flex items-center">
+          Projects
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0 ml-2">
+                  <Info className="h-4 w-4" />
+                  <span className="sr-only">Info</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="max-w-xs">
+                  Add notable projects you&apos;ve worked on. Include details
+                  about technologies used and your contributions.
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </CardTitle>
         <CardDescription>
           Add notable projects you&apos;ve worked on
         </CardDescription>

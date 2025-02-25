@@ -24,12 +24,6 @@ import { PlusCircle } from "lucide-react";
 // Define section metadata
 const sectionOptions = [
   {
-    id: "projects",
-    name: "Projects",
-    description: "Showcase your personal or professional projects",
-    required: false,
-  },
-  {
     id: "certificates",
     name: "Certifications",
     description: "Display professional certifications and licenses",
@@ -98,6 +92,12 @@ const requiredSections = [
   {
     id: "skills",
     name: "Skills",
+    required: true,
+  },
+  {
+    id: "projects",
+    name: "Projects",
+    description: "Showcase your personal or professional projects",
     required: true,
   },
 ];

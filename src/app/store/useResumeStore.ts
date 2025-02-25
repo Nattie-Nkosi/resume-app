@@ -75,11 +75,18 @@ const initialState: ResumeData = {
   skillGroups: [{
     category: "Technical" as SkillCategory,
     skills: [{ name: '', proficiency: "Intermediate" }]
+  }],
+  projects: [{
+    title: '',
+    description: '',
+    technologies: [],
+    startDate: '',
+    endDate: '',
   }]
 }
 
 // Default active sections (required sections)
-const defaultActiveSections = ['personalInfo', 'experiences', 'education', 'skills'];
+const defaultActiveSections = ['personalInfo', 'experiences', 'education', 'skills', 'projects'];
 
 export const useResumeStore = create<ResumeStore>()(
   persist(

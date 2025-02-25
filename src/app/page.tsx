@@ -309,12 +309,14 @@ export default function Home() {
                 />
               </TabsContent>
 
-              <TabsContent value="skills">
-                <Skills
-                  onSubmit={({ skillGroups }) => updateSkills(skillGroups)}
-                  defaultValues={{ skillGroups: resumeData.skillGroups }}
-                />
-              </TabsContent>
+              {
+                <TabsContent value="skills">
+                  <Skills
+                    onSubmit={({ skillGroups }) => updateSkills(skillGroups)}
+                    defaultValues={{ skillGroups: resumeData.skillGroups }}
+                  />
+                </TabsContent>
+              }
 
               {/* Optional Sections */}
               <TabsContent value="projects">

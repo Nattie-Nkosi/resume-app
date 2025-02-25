@@ -515,6 +515,7 @@ const ResumePDF = ({
             </View>
 
             {/* Projects Section if available */}
+
             {data.projects && data.projects.length > 0 && (
               <View style={styles.sectionContent}>
                 <Text style={styles.sectionTitle}>Projects</Text>
@@ -522,12 +523,24 @@ const ResumePDF = ({
                 {data.projects.map((project, index) => (
                   <View key={`project-${index}`} style={styles.experienceItem}>
                     <View style={styles.experienceHeader}>
-                      <Text style={styles.positionTitle}>{project.title}</Text>
+                      <Text style={styles.positionTitle}>
+                        {project.title}
+                        {project.link && (
+                          <Link src={project.link} style={styles.link}>
+                            <Text
+                              style={{ fontSize: 8, color: styles.link.color }}
+                            >
+                              {" "}
+                              [Link]
+                            </Text>
+                          </Link>
+                        )}
+                      </Text>
                       <Text style={styles.dateRange}>
                         {formatDate(project.startDate)} -{" "}
-                        {project.endDate
-                          ? formatDate(project.endDate)
-                          : "Present"}
+                        {project.currentProject
+                          ? "Present"
+                          : formatDate(project.endDate)}
                       </Text>
                     </View>
                     <Text style={styles.description}>
@@ -536,7 +549,7 @@ const ResumePDF = ({
 
                     {project.technologies &&
                       project.technologies.length > 0 && (
-                        <View style={styles.skillContainer}>
+                        <View style={[styles.skillContainer, { marginTop: 5 }]}>
                           {project.technologies.map((tech, techIndex) => (
                             <Text
                               key={`tech-${index}-${techIndex}`}
