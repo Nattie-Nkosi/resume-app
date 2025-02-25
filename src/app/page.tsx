@@ -101,7 +101,7 @@ export default function Home() {
   const updateEducation = useResumeStore((state) => state.updateEducation);
   const updateSkills = useResumeStore((state) => state.updateSkills);
   const updateProjects = useResumeStore((state) => state.updateProjects);
-  const updateCertificates = useResumeStore(
+  /* const updateCertificates = useResumeStore(
     (state) => state.updateCertificates
   );
   const updateLanguages = useResumeStore((state) => state.updateLanguages);
@@ -114,7 +114,7 @@ export default function Home() {
   const updateVolunteer = useResumeStore((state) => state.updateVolunteer);
   const updateCustomSections = useResumeStore(
     (state) => state.updateCustomSections
-  );
+  ); */
   const resetStore = useResumeStore((state) => state.resetStore);
 
   const togglePreview = () => {

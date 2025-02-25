@@ -37,8 +37,7 @@ import {
 import {
   copyToClipboard,
   handlePrintDocument,
-  exportResumeToMultiPagePDF,
-  exportResumeBySections,
+  exportResumeToSinglePagePDF,
 } from "./utils/preview-helpers";
 
 interface ComprehensivePreviewProps {
@@ -49,7 +48,7 @@ const ComprehensivePreview: React.FC<ComprehensivePreviewProps> = ({
   data,
 }) => {
   const [selectedTheme, setSelectedTheme] = useState<ThemeKey>("classic");
-  const [selectedLayout, setSelectedLayout] = useState<LayoutType>("standard");
+  const [selectedLayout, setSelectedLayout] = useState<LayoutType>("compact");
   const [isExporting, setIsExporting] = useState(false);
   const resumeRef = useRef<HTMLDivElement>(null);
   const printRef = useRef<HTMLDivElement>(null);
@@ -72,66 +71,26 @@ const ComprehensivePreview: React.FC<ComprehensivePreviewProps> = ({
     try {
       setIsExporting(true);
 
-      // First try to use the print view
-      let element = printRef.current;
-
-      // If print view isn't accessible, try to switch to it
-      if (!element) {
-        // Ensure we're on the print view tab
-        const printViewTabButton = document.querySelector(
-          '[value="print-view"]'
-        );
-        if (printViewTabButton && printViewTabButton instanceof HTMLElement) {
-          printViewTabButton.click();
-          // Wait for tab content to render
-          await new Promise((resolve) => setTimeout(resolve, 300));
-          element = document.querySelector(
-            ".pdf-preview-container"
-          ) as HTMLDivElement;
-        }
-      }
-
-      // If we still don't have an element, try the preview
-      if (!element) {
-        element = resumeRef.current;
-      }
-
-      // Last resort - try to find any viable resume elements
-      if (!element) {
-        const candidates = [
-          document.querySelector(".bg-white.shadow-lg"),
-          document.querySelector(".print-container"),
-          document.querySelector('[data-state="active"] .bg-white'),
-        ];
-
-        element = candidates.find((el) => el !== null) as HTMLDivElement;
-      }
-
-      if (!element) {
-        console.error("Could not find printable element");
-        alert("Unable to generate PDF. Please try again.");
-        return;
-      }
-
       // Generate a filename based on the user's name and current date
       const fullName = data.personalInfo.fullName || "Resume";
       const sanitizedName = fullName.replace(/[^a-z0-9]/gi, "_").toLowerCase();
       const date = new Date().toISOString().slice(0, 10);
       const filename = `${sanitizedName}_resume_${date}.pdf`;
 
-      // Try the main export method first
-      try {
-        console.log("Exporting resume as PDF...");
-        await exportResumeToMultiPagePDF(element, filename);
-        console.log("Export successful!");
-      } catch (error) {
-        console.error(
-          "Primary export method failed, trying alternative method:",
-          error
-        );
-        // Try the alternative section-by-section method if the main one fails
-        await exportResumeBySections(element, filename);
-      }
+      // Use the React-PDF export function with the resume data and selected theme
+      if (!resumeRef.current) return;
+      await exportResumeToSinglePagePDF(
+        resumeRef.current,
+        filename,
+        data,
+        selectedTheme as
+          | "classic"
+          | "modern"
+          | "professional"
+          | "minimalist"
+          | "creative"
+      );
+      console.log("Export successful!");
     } catch (error) {
       console.error("Failed to export PDF:", error);
       alert("Failed to export PDF. Please try again.");
@@ -173,8 +132,8 @@ const ComprehensivePreview: React.FC<ComprehensivePreviewProps> = ({
                 <SelectValue placeholder="Select Layout" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="standard">Standard</SelectItem>
                 <SelectItem value="compact">Compact</SelectItem>
+                <SelectItem value="standard">Standard</SelectItem>
                 <SelectItem value="elegant">Elegant</SelectItem>
                 <SelectItem value="modern">Modern</SelectItem>
               </SelectContent>
@@ -229,7 +188,7 @@ const ComprehensivePreview: React.FC<ComprehensivePreviewProps> = ({
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Export as PDF</p>
+                <p>Export as PDF with current theme</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -281,7 +240,9 @@ const ComprehensivePreview: React.FC<ComprehensivePreviewProps> = ({
               )}
             </div>
             <div className="text-center mt-4 text-gray-500">
-              <p>A4 Size Preview - Print or Export for Best Results</p>
+              <p>
+                A4 Size Preview (Single Page) - Print or Export for Best Results
+              </p>
             </div>
           </div>
         </TabsContent>
