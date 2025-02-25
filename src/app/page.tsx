@@ -34,6 +34,20 @@ export default function Home() {
     setShowPreview(!showPreview);
   };
 
+  // Navigation handlers
+  const handlePrevious = () => {
+    if (activeTab === "experience") setActiveTab("personal-info");
+    else if (activeTab === "education") setActiveTab("experience");
+    else if (activeTab === "skills") setActiveTab("education");
+  };
+
+  const handleNext = () => {
+    if (activeTab === "personal-info") setActiveTab("experience");
+    else if (activeTab === "experience") setActiveTab("education");
+    else if (activeTab === "education") setActiveTab("skills");
+    else if (activeTab === "skills") togglePreview();
+  };
+
   return (
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
@@ -58,7 +72,7 @@ export default function Home() {
       ) : (
         <div className="space-y-6">
           <Tabs
-            defaultValue={activeTab}
+            value={activeTab}
             onValueChange={setActiveTab}
             className="w-full"
           >
@@ -113,31 +127,13 @@ export default function Home() {
           <div className="mt-6 flex justify-between">
             <Button
               variant="outline"
-              onClick={() => {
-                const prevTab = {
-                  experience: "personal-info",
-                  education: "experience",
-                  skills: "education",
-                }[activeTab];
-                if (prevTab) setActiveTab(prevTab);
-              }}
+              onClick={handlePrevious}
               disabled={activeTab === "personal-info"}
             >
               Previous
             </Button>
 
-            <Button
-              onClick={() => {
-                const nextTab = {
-                  "personal-info": "experience",
-                  experience: "education",
-                  education: "skills",
-                  skills: "skills",
-                }[activeTab];
-                if (nextTab) setActiveTab(nextTab);
-                if (activeTab === "skills") togglePreview();
-              }}
-            >
+            <Button onClick={handleNext}>
               {activeTab === "skills" ? "Preview Resume" : "Next"}
             </Button>
           </div>

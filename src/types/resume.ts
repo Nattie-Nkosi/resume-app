@@ -31,13 +31,33 @@ export interface Education {
   achievements?: string;
 }
 
+export const skillCategories = [
+  "Technical",
+  "Soft Skills",
+  "Languages",
+  "Tools",
+  "Frameworks",
+  "Other"
+] as const;
+
+export const proficiencyLevels = [
+  "Beginner",
+  "Intermediate",
+  "Advanced",
+  "Expert"
+] as const;
+
+// Use these constant types for your Resume types
+export type SkillCategory = typeof skillCategories[number];
+export type ProficiencyLevel = typeof proficiencyLevels[number];
+
 export interface Skill {
   name: string;
-  proficiency: "Beginner" | "Intermediate" | "Advanced" | "Expert";
+  proficiency: ProficiencyLevel;
 }
 
 export interface SkillGroup {
-  category: string;
+  category: SkillCategory;
   skills: Skill[];
 }
 

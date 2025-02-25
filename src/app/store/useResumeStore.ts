@@ -2,6 +2,7 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import type { ResumeData } from '@/types/resume'
+import { SkillCategory } from '@/types/resume';
 
 interface ResumeStore {
   resumeData: ResumeData
@@ -44,7 +45,7 @@ const initialState: ResumeData = {
     achievements: ''
   }],
   skillGroups: [{
-    category: 'Technical',
+    category: "Technical" as SkillCategory,
     skills: [{ name: '', proficiency: 'Intermediate' }]
   }]
 }
