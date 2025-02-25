@@ -2,6 +2,8 @@
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 
+
+
 /**
  * Copy text to clipboard
  * @param text 
@@ -57,12 +59,17 @@ export const exportResumeToMultiPagePDF = async (
     // Set cursor to indicate processing
     document.body.style.cursor = 'wait';
 
-    // Create canvas
+    // Prepare the element for export
+    element.classList.add('pdf-export-ready');
+
+    // Set better canvas options for higher quality
     const canvas = await html2canvas(element, {
       scale: 2,
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#ffffff',
+      logging: false, // Reduce console noise
+      imageTimeout: 15000, // Longer timeout for images
     });
 
     // Calculate dimensions
@@ -103,6 +110,7 @@ export const exportResumeToMultiPagePDF = async (
     pdf.save(filename);
 
     // Reset cursor
+    element.classList.remove('pdf-export-ready');
     document.body.style.cursor = 'auto';
 
     return Promise.resolve();

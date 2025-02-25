@@ -25,7 +25,7 @@ import {
 import { LinkedinIcon, GithubIcon, Globe, Link2 } from "lucide-react";
 
 // Validation patterns
-const saPhoneRegex = /^\+27[0-9]{9}$/;
+const phoneRegex = /^\+?[1-9]\d{1,14}$/;
 const nameRegex = /^[a-zA-Z\s'-]+$/;
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const locationRegex = /^[a-zA-Z\s',.-]+$/;
@@ -63,7 +63,7 @@ const formSchema = z.object({
 
   phone: z
     .string()
-    .regex(saPhoneRegex, {
+    .regex(phoneRegex, {
       message: "Please enter a valid South African phone number (+27XXXXXXXXX)",
     })
     .transform((value) => {

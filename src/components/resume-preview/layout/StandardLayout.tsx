@@ -23,7 +23,11 @@ const StandardLayout = React.forwardRef<HTMLDivElement, StandardLayoutProps>(
 
     return (
       <Card className={`bg-white shadow-lg ${containerClass}`}>
-        <CardContent className="p-8" ref={ref}>
+        <CardContent
+          className="border-b pb-6 mb-6"
+          data-section="header"
+          ref={ref}
+        >
           {/* Header/Personal Info */}
           <div className={`border-b ${theme.border} pb-6 mb-6`}>
             <h1 className={`text-3xl font-bold ${theme.heading} mb-2`}>
@@ -104,7 +108,7 @@ const StandardLayout = React.forwardRef<HTMLDivElement, StandardLayoutProps>(
 
           {/* Experience Section */}
           {experiences.length > 0 && (
-            <div className="mb-6">
+            <div className="mb-6" data-section="experience">
               <h2 className={`text-xl font-semibold ${theme.heading} mb-4`}>
                 Professional Experience
               </h2>

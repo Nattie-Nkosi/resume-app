@@ -12,6 +12,17 @@ import { Button } from "@/components/ui/button";
 import { useResumeStore } from "./store/useResumeStore";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
   UserRound,
   Briefcase,
   GraduationCap,
@@ -26,7 +37,11 @@ import {
   Trophy,
   HeartHandshake,
   PlusCircle,
+  Download,
+  Upload,
 } from "lucide-react";
+import ErrorBoundary from "@/components/error-boundary";
+import { saveAs } from "file-saver";
 
 // Map of section IDs to tab data (icon and label)
 const sectionTabData = {
@@ -115,6 +130,42 @@ export default function Home() {
     return null;
   };
 
+  // Add these functions:
+  const exportResumeData = () => {
+    const data = JSON.stringify(resumeData);
+    const blob = new Blob([data], { type: "application/json" });
+    const filename = `${resumeData.personalInfo.fullName || "resume"}_data.json`
+      .toLowerCase()
+      .replace(/\s+/g, "_");
+    saveAs(blob, filename);
+  };
+
+  const importResumeData = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target?.result as string);
+        // Update all sections of the resume
+        updatePersonalInfo(data.personalInfo);
+        updateExperiences(data.experiences);
+        updateEducation(data.education);
+        updateSkills(data.skillGroups);
+        // Update optional sections as needed
+        if (data.projects) updateProjects(data.projects);
+        // etc. for other sections
+
+        // Add success message
+      } catch (error) {
+        console.error("Error importing data:", error);
+        // Show error message
+      }
+    };
+    reader.readAsText(file);
+  };
+
   // Find the previous active section
   const findPrevSection = (currentSection: string) => {
     const currentIndex = activeSections.indexOf(currentSection);
@@ -151,6 +202,26 @@ export default function Home() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Resume Builder</h1>
         <div className="flex gap-2">
+          <Button onClick={exportResumeData} variant="outline">
+            <Download className="h-4 w-4 mr-2" />
+            Export Data
+          </Button>
+          <div className="relative">
+            <Button
+              variant="outline"
+              onClick={() => document.getElementById("import-file")?.click()}
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              Import Data
+            </Button>
+            <input
+              id="import-file"
+              type="file"
+              accept=".json"
+              className="hidden"
+              onChange={importResumeData}
+            />
+          </div>
           <Button
             onClick={togglePreview}
             variant={showPreview ? "default" : "outline"}
@@ -159,9 +230,26 @@ export default function Home() {
             <Eye className="h-4 w-4 mr-2" />
             {showPreview ? "Edit Resume" : "Preview Resume"}
           </Button>
-          <Button onClick={resetStore} variant="destructive">
-            Reset
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive">Reset</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete all your resume data and cannot
+                  be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={resetStore}>
+                  Reset
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
 
@@ -170,88 +258,93 @@ export default function Home() {
         <SectionManager />
       </div>
 
-      {showPreview ? (
-        <ComprehensivePreview data={resumeData} />
-      ) : (
-        <div className="space-y-6">
-          <Tabs
-            value={activeTab}
-            onValueChange={setActiveTab}
-            className="w-full"
-          >
-            <TabsList className="flex flex-wrap mb-6 h-auto">
-              {activeSections.map((section) => (
-                <TabsTrigger
-                  key={section}
-                  value={section}
-                  className="flex items-center"
-                >
-                  {sectionTabData[section as keyof typeof sectionTabData]?.icon}
-                  {
-                    sectionTabData[section as keyof typeof sectionTabData]
-                      ?.label
-                  }
-                </TabsTrigger>
-              ))}
-            </TabsList>
-
-            {/* Required Sections */}
-            <TabsContent value="personalInfo">
-              <PersonalInfo
-                onSubmit={updatePersonalInfo}
-                defaultValues={resumeData.personalInfo}
-              />
-            </TabsContent>
-
-            <TabsContent value="experiences">
-              <Experience
-                onSubmit={({ experiences }) => updateExperiences(experiences)}
-                defaultValues={{ experiences: resumeData.experiences }}
-              />
-            </TabsContent>
-
-            <TabsContent value="education">
-              <Education
-                onSubmit={({ education }) => updateEducation(education)}
-                defaultValues={{ education: resumeData.education }}
-              />
-            </TabsContent>
-
-            <TabsContent value="skills">
-              <Skills
-                onSubmit={({ skillGroups }) => updateSkills(skillGroups)}
-                defaultValues={{ skillGroups: resumeData.skillGroups }}
-              />
-            </TabsContent>
-
-            {/* Optional Sections */}
-            <TabsContent value="projects">
-              <Projects
-                onSubmit={({ projects }) => updateProjects(projects)}
-                defaultValues={{ projects: resumeData.projects || [] }}
-              />
-            </TabsContent>
-
-            {/* Other optional sections content will go here */}
-            {/* For brevity, I'm not implementing all the optional section components */}
-            {/* You would add TabsContent for each optional section here */}
-          </Tabs>
-
-          <div className="mt-6 flex justify-between">
-            <Button
-              variant="outline"
-              onClick={handlePrevious}
-              disabled={activeSections.indexOf(activeTab) === 0}
+      <ErrorBoundary>
+        {showPreview ? (
+          <ComprehensivePreview data={resumeData} />
+        ) : (
+          <div className="space-y-6">
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="w-full"
             >
-              Previous
-            </Button>
+              <TabsList className="flex flex-wrap mb-6 h-auto">
+                {activeSections.map((section) => (
+                  <TabsTrigger
+                    key={section}
+                    value={section}
+                    className="flex items-center"
+                  >
+                    {
+                      sectionTabData[section as keyof typeof sectionTabData]
+                        ?.icon
+                    }
+                    {
+                      sectionTabData[section as keyof typeof sectionTabData]
+                        ?.label
+                    }
+                  </TabsTrigger>
+                ))}
+              </TabsList>
 
-            <Button onClick={handleNext}>
-              {isLastTab ? "Preview Resume" : "Next"}
-            </Button>
+              {/* Required Sections */}
+              <TabsContent value="personalInfo">
+                <PersonalInfo
+                  onSubmit={updatePersonalInfo}
+                  defaultValues={resumeData.personalInfo}
+                />
+              </TabsContent>
+
+              <TabsContent value="experiences">
+                <Experience
+                  onSubmit={({ experiences }) => updateExperiences(experiences)}
+                  defaultValues={{ experiences: resumeData.experiences }}
+                />
+              </TabsContent>
+
+              <TabsContent value="education">
+                <Education
+                  onSubmit={({ education }) => updateEducation(education)}
+                  defaultValues={{ education: resumeData.education }}
+                />
+              </TabsContent>
+
+              <TabsContent value="skills">
+                <Skills
+                  onSubmit={({ skillGroups }) => updateSkills(skillGroups)}
+                  defaultValues={{ skillGroups: resumeData.skillGroups }}
+                />
+              </TabsContent>
+
+              {/* Optional Sections */}
+              <TabsContent value="projects">
+                <Projects
+                  onSubmit={({ projects }) => updateProjects(projects)}
+                  defaultValues={{ projects: resumeData.projects || [] }}
+                />
+              </TabsContent>
+
+              {/* Other optional sections content will go here */}
+              {/* For brevity, I'm not implementing all the optional section components */}
+              {/* You would add TabsContent for each optional section here */}
+            </Tabs>
+
+            <div className="mt-6 flex justify-between">
+              <Button
+                variant="outline"
+                onClick={handlePrevious}
+                disabled={activeSections.indexOf(activeTab) === 0}
+              >
+                Previous
+              </Button>
+
+              <Button onClick={handleNext}>
+                {isLastTab ? "Preview Resume" : "Next"}
+              </Button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </ErrorBoundary>
     </div>
   );
 }

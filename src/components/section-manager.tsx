@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 import { useResumeStore } from "@/app/store/useResumeStore";
 import { Badge } from "@/components/ui/badge";
 import { PlusCircle } from "lucide-react";
@@ -103,17 +104,26 @@ const requiredSections = [
 
 const SectionManager = () => {
   const { activeSections, addSection, removeSection } = useResumeStore();
+  const { toast } = useToast();
 
   const handleSectionToggle = (sectionId: string, isActive: boolean) => {
-    console.log(
-      `Toggling section: ${sectionId}, currently active: ${isActive}`
-    );
     if (isActive) {
       removeSection(sectionId);
+      toast({
+        title: "Section removed",
+        description: `${
+          sectionOptions.find((s) => s.id === sectionId)?.name
+        } section has been removed.`,
+      });
     } else {
       addSection(sectionId);
+      toast({
+        title: "Section added",
+        description: `${
+          sectionOptions.find((s) => s.id === sectionId)?.name
+        } section has been added.`,
+      });
     }
-    console.log("Active sections after toggle:", activeSections);
   };
 
   return (
