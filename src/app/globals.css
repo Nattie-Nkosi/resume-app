@@ -105,56 +105,49 @@
   }
 }
 
-/* Print and PDF Export Styles */
-@media print {
-  @page {
-    size: A4;
-    margin: 0;
-  }
-
-  body {
-    margin: 0;
-    padding: 0;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  .print-container {
-    width: 210mm;
-    min-height: 297mm;
-    padding: 10mm;
-    margin: 0;
-    background: white;
-    box-shadow: none;
-    color-adjust: exact;
-  }
+/* PDF Export Styles */
+.pdf-export-ready {
+  /* Force the container to display all content for export */
+  height: auto !important;
+  overflow: visible !important;
+  page-break-inside: auto !important;
 }
 
-/* A4 preview container styles */
-.pdf-preview-container {
-  width: 210mm;
-  min-height: 297mm;
-  padding: 10mm;
-  margin: 0 auto;
-  background: white;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+/* Make sure sections don't break across pages */
+.pdf-section {
+  page-break-inside: avoid;
+  margin-bottom: 16px;
 }
 
-/* Make links more visible in PDFs */
-.pdf-links a {
-  text-decoration: underline;
-  font-weight: 500;
+/* Ensure elements don't get cut off at page boundaries */
+.pdf-container * {
+  page-break-inside: avoid;
 }
 
-/* Ensure proper spacing in exported content */
-.pdf-content {
-  line-height: 1.5;
+/* Make sure sections have proper spacing */
+.pdf-container .section {
+  margin-bottom: 16px !important;
 }
 
-/* For better image quality in PDFs */
-.pdf-image-quality {
-  image-rendering: high-quality;
+/* Critical elements that must not break across pages */
+.pdf-container .heading,
+.pdf-container .contact-info,
+.pdf-container .section-title {
+  page-break-after: avoid;
+}
+
+/* Links styling for PDF */
+.pdf-container a {
+  color: #0000ee !important;
+  text-decoration: underline !important;
+}
+
+/* Ensure the PDF container doesn't have any unexpected sizing constraints */
+.pdf-container {
+  width: 100% !important;
+  max-width: none !important;
+  min-height: auto !important;
+  max-height: none !important;
 }
 
 @layer base {

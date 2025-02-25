@@ -37,7 +37,8 @@ import {
 import {
   copyToClipboard,
   handlePrintDocument,
-  exportResumeToPDF,
+  exportResumeToMultiPagePDF,
+  exportResumeBySections,
 } from "./utils/preview-helpers";
 
 interface ComprehensivePreviewProps {
@@ -68,39 +69,69 @@ const ComprehensivePreview: React.FC<ComprehensivePreviewProps> = ({
   };
 
   const handleExportPDF = async () => {
-    // Try both refs since printRef might not be available
-    let element = printRef.current || resumeRef.current;
-
-    if (!element) {
-      console.log("Initial refs not found, looking for any resume element");
-      // Fallback to find any resume element
-      element =
-        (document.querySelector(".pdf-preview-container") as HTMLDivElement) ||
-        (document.querySelector(".bg-white.shadow-lg") as HTMLDivElement);
-    }
-
-    if (!element) {
-      console.error("Could not find any printable element");
-      alert("Unable to generate PDF. Please try again.");
-      return;
-    }
-
     try {
       setIsExporting(true);
 
-      // Add a delay to ensure the element is fully rendered
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // First try to use the print view
+      let element = printRef.current;
 
-      // Generate filename based on user's name and current date
+      // If print view isn't accessible, try to switch to it
+      if (!element) {
+        // Ensure we're on the print view tab
+        const printViewTabButton = document.querySelector(
+          '[value="print-view"]'
+        );
+        if (printViewTabButton && printViewTabButton instanceof HTMLElement) {
+          printViewTabButton.click();
+          // Wait for tab content to render
+          await new Promise((resolve) => setTimeout(resolve, 300));
+          element = document.querySelector(
+            ".pdf-preview-container"
+          ) as HTMLDivElement;
+        }
+      }
+
+      // If we still don't have an element, try the preview
+      if (!element) {
+        element = resumeRef.current;
+      }
+
+      // Last resort - try to find any viable resume elements
+      if (!element) {
+        const candidates = [
+          document.querySelector(".bg-white.shadow-lg"),
+          document.querySelector(".print-container"),
+          document.querySelector('[data-state="active"] .bg-white'),
+        ];
+
+        element = candidates.find((el) => el !== null) as HTMLDivElement;
+      }
+
+      if (!element) {
+        console.error("Could not find printable element");
+        alert("Unable to generate PDF. Please try again.");
+        return;
+      }
+
+      // Generate a filename based on the user's name and current date
       const fullName = data.personalInfo.fullName || "Resume";
       const sanitizedName = fullName.replace(/[^a-z0-9]/gi, "_").toLowerCase();
       const date = new Date().toISOString().slice(0, 10);
       const filename = `${sanitizedName}_resume_${date}.pdf`;
 
-      console.log("Found element for export:", element);
-      // Use the new optimized export function
-      await exportResumeToPDF(element, filename);
-      console.log("PDF export completed successfully");
+      // Try the main export method first
+      try {
+        console.log("Exporting resume as PDF...");
+        await exportResumeToMultiPagePDF(element, filename);
+        console.log("Export successful!");
+      } catch (error) {
+        console.error(
+          "Primary export method failed, trying alternative method:",
+          error
+        );
+        // Try the alternative section-by-section method if the main one fails
+        await exportResumeBySections(element, filename);
+      }
     } catch (error) {
       console.error("Failed to export PDF:", error);
       alert("Failed to export PDF. Please try again.");
