@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useFieldArray, useForm } from "react-hook-form";
+import { Control, useFieldArray, useForm } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -270,7 +270,7 @@ const Skills: React.FC<SkillsProps> = ({
 };
 
 interface SkillGroupProps {
-  control: any;
+  control: Control<SkillsFormValues>;
   index: number;
   onRemove: () => void;
   isRemovable: boolean;
