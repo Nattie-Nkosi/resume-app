@@ -1,4 +1,5 @@
 // src/components/resume-preview/utils/preview-helpers.ts
+// Update the import to use the new file extension
 import { exportResumeToPDF } from './react-pdf-export';
 import type { ResumeData } from '@/types/resume';
 import type { ThemeKey } from '../theme-config';
@@ -63,19 +64,23 @@ export const exportResumeToSinglePagePDF = async (
     document.body.style.cursor = 'wait';
 
     // Extract data from the window if not provided as a parameter
-    // This is a fallback when the function is called from the old code
     if (!data) {
-      // Try to get data from the window or find it elsewhere
-      // @ts-expect-error - Accessing global window object
-      data = window.resumeData || element.dataset.resumeData;
+      // Try to get data from the window global store
+      // @ts-expect-error - Accessing global window object with dynamic properties
+      const windowData = window.resumeData || (element.dataset?.resumeData ? JSON.parse(element.dataset.resumeData) : null);
 
-      if (!data) {
+      if (!windowData) {
         console.error('Resume data not found');
         throw new Error('Resume data not found for PDF export');
       }
+
+      data = windowData;
     }
 
     // Use our React-PDF export function with theme support
+    if (!data) {
+      throw new Error('Resume data is required for PDF export');
+    }
     await exportResumeToPDF(data, filename, theme);
 
     // Reset cursor
@@ -110,5 +115,10 @@ export const exportResumeBySections = async (
   data?: ResumeData,
   theme: ThemeKey = 'classic'
 ): Promise<void> => {
-  return exportResumeToSinglePagePDF(element, filename, data, theme as 'classic' | 'modern' | 'professional' | 'minimalist' | 'creative');
+  return exportResumeToSinglePagePDF(
+    element,
+    filename,
+    data,
+    theme as 'classic' | 'modern' | 'professional' | 'minimalist' | 'creative'
+  );
 };

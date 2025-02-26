@@ -1,10 +1,10 @@
-// src/components/resume-preview/utils/pdf/index.ts
-import { pdf } from "@react-pdf/renderer";
+// src/components/resume-preview/utils/pdf/index.tsx
+import React from "react";
+import { pdf, Document } from "@react-pdf/renderer";
 import { saveAs } from "file-saver";
 import type { ResumeData } from "@/types/resume";
 import { ThemeKey } from "./theme-styles";
 import { ResumePDF } from "./ResumePDF";
-import React from 'react';
 
 /**
  * Export Resume to PDF with theme support
@@ -19,7 +19,15 @@ export const exportResumeToPDF = async (
   theme: ThemeKey = "classic"
 ): Promise<void> => {
   try {
-    const blob = await pdf(React.createElement(ResumePDF, { data, theme })).toBlob();
+    // Create a wrapper Document component to satisfy type requirements
+    const PdfDocument = () => (
+      <Document>
+        <ResumePDF data={data} theme={theme} />
+      </Document>
+    );
+
+    // Generate the PDF blob
+    const blob = await pdf(<PdfDocument />).toBlob();
 
     // Save the PDF
     saveAs(blob, filename);
