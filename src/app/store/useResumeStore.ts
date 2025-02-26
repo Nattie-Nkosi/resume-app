@@ -3,13 +3,6 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type {
   ResumeData,
-  PersonalInfo,
-  Experience,
-  Education,
-  SkillGroup,
-  Project,
-  Certificate,
-  Achievement,
   SkillCategory
 } from '@/types/resume'
 

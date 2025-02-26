@@ -55,9 +55,6 @@ export const ResumePDF: React.FC<ResumePDFProps> = ({
 
             {/* Languages Section */}
             <LanguagesSection languages={data.languages} styles={styles} />
-
-            {/* References Section - add this section */}
-            <ReferencesSection references={data.references} styles={styles} />
           </View>
 
           {/* Right Column */}
@@ -77,6 +74,9 @@ export const ResumePDF: React.FC<ResumePDFProps> = ({
               achievements={data.achievements}
               styles={styles}
             />
+
+            {/* References Section - add this section */}
+            <ReferencesSection references={data.references} styles={styles} />
           </View>
         </View>
       </Page>

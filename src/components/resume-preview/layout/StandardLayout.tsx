@@ -454,7 +454,7 @@ const StandardLayout = React.forwardRef<HTMLDivElement, StandardLayoutProps>(
                 </div>
               )}
 
-              {/* References Section */}
+              {/* References Section with consistent divider styling */}
               {references && references.length > 0 && (
                 <div className="pdf-section mb-5 print:mb-4">
                   <h2
@@ -462,26 +462,30 @@ const StandardLayout = React.forwardRef<HTMLDivElement, StandardLayoutProps>(
                   >
                     <Users className="w-4 h-4" /> References
                   </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 print:gap-3">
+                  <div className="space-y-4 print:space-y-3">
                     {references.map((reference, index) => (
                       <div
                         key={index}
-                        className="bg-gray-50 p-3 rounded border-l-2 border-gray-200 print:p-2"
+                        className="mb-3 page-break-inside-avoid last:mb-0 border-l-2 pl-3 border-gray-200"
                       >
-                        <h3
-                          className={`font-medium ${theme.primary} text-sm print:text-xs`}
-                        >
-                          {reference.name}
-                        </h3>
-                        <div className={`text-xs ${theme.secondary}`}>
-                          {reference.position} • {reference.company}
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h3
+                              className={`font-medium ${theme.primary} text-sm print:text-xs`}
+                            >
+                              {reference.name}
+                            </h3>
+                            <div className={`${theme.secondary} text-xs`}>
+                              {reference.position} • {reference.company}
+                            </div>
+                          </div>
                         </div>
                         <div className={`text-xs ${theme.secondary} mt-1`}>
                           {reference.relationship}
                         </div>
-                        <div className={`text-xs ${theme.primary} mt-1`}>
-                          {reference.contact}
-                        </div>
+                        <p className={`mt-1 text-xs ${theme.primary}`}>
+                          Contact: {reference.contact}
+                        </p>
                       </div>
                     ))}
                   </div>

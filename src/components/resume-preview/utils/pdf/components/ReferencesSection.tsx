@@ -22,30 +22,36 @@ export const ReferencesSection: React.FC<ReferencesSectionProps> = ({
     <View style={styles.sectionContent}>
       <Text style={styles.sectionTitle}>References</Text>
 
-      <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+      <View style={{ flexDirection: "column" }}>
         {references
           .filter((ref) => hasContent(ref.name))
           .map((ref, index) => (
             <View
               key={`reference-${index}`}
               style={{
-                width: references.length > 1 ? "50%" : "100%",
-                paddingRight: references.length > 1 ? 5 : 0,
-                marginBottom: 8,
+                marginBottom: 7,
+                borderLeft: `1.5px solid ${
+                  styles.experienceItem.borderLeft.split(" ")[3]
+                }`,
+                paddingLeft: 5,
               }}
             >
-              <Text style={styles.degree}>{ref.name}</Text>
-
-              <View style={{ flexDirection: "row" }}>
-                <Text style={[styles.company, { marginRight: 2 }]}>
-                  {ref.position}
-                </Text>
-                <Text style={styles.company}>• {ref.company}</Text>
+              <View style={styles.experienceHeader}>
+                <Text style={styles.positionTitle}>{ref.name}</Text>
               </View>
+
+              <Text style={styles.company}>
+                {ref.position} • {ref.company}
+              </Text>
 
               <Text style={styles.description}>{ref.relationship}</Text>
 
-              <Text style={[styles.description, { marginTop: 1 }]}>
+              <Text
+                style={[
+                  styles.description,
+                  { fontWeight: "medium", marginTop: 1 },
+                ]}
+              >
                 Contact: {ref.contact}
               </Text>
             </View>

@@ -208,9 +208,9 @@ export const createStyles = (theme: ThemeKey = "classic") => {
       paddingRight: 5,
     },
     experienceItem: {
-      marginBottom: 7, // Further reduced
+      marginBottom: 8, // Further reduced
       borderLeft: `1.5px solid ${themeConfig.border}`, // Thinner border
-      paddingLeft: 5, // Further reduced
+      paddingLeft: 6, // Further reduced
     },
     experienceHeader: {
       flexDirection: "row",
@@ -262,7 +262,7 @@ export const createStyles = (theme: ThemeKey = "classic") => {
     toolsList: {
       flexDirection: "row",
       flexWrap: "wrap",
-      marginBottom: 3, // Further reduced
+      marginBottom: 4, // Further reduced
     },
     techItem: {
       fontSize: 7, // Further reduced

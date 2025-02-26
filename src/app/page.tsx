@@ -266,9 +266,14 @@ export default function Home() {
     activeSections.indexOf(activeTab) === activeSections.length - 1;
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto p-6 pt-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Resume Builder</h1>
+        <div>
+          <h1 className="text-3xl font-bold">Build Your Professional Resume</h1>
+          <p className="text-muted-foreground mt-2">
+            Create, customize, and download your resume for any job application.
+          </p>
+        </div>
         <div className="flex gap-2">
           <Button onClick={exportResumeData} variant="outline">
             <Download className="h-4 w-4 mr-2" />
