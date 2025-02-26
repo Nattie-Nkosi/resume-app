@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/components/resume-preview/utils/pdf/components/ProjectsSection.tsx
 import React from "react";
 import { View, Text, Link } from "@react-pdf/renderer";

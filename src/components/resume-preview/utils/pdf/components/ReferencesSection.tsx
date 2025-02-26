@@ -6,6 +6,7 @@ import { hasContent } from "../utils";
 
 interface ReferencesSectionProps {
   references?: Reference[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   styles: Record<string, any>;
 }
 

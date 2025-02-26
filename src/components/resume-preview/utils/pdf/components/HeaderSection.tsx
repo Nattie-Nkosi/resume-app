@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/components/resume-preview/utils/pdf/components/HeaderSection.tsx
 import React from "react";
 import { View, Text, Link } from "@react-pdf/renderer";
@@ -14,7 +15,6 @@ interface HeaderSectionProps {
 export const HeaderSection: React.FC<HeaderSectionProps> = ({
   personalInfo,
   styles,
-  theme,
 }) => {
   return (
     <View style={styles.header}>

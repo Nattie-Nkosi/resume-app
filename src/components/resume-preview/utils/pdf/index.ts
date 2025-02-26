@@ -18,7 +18,7 @@ export const exportResumeToPDF = async (
   theme: ThemeKey = "classic"
 ): Promise<void> => {
   try {
-    // Don't wrap ResumePDF in a Document since it already includes a Document
+
     const blob = await pdf(React.createElement(ResumePDF, { data, theme })).toBlob();
 
     // Save the PDF

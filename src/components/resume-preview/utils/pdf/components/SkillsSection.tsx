@@ -1,12 +1,12 @@
 // src/components/resume-preview/utils/pdf/components/SkillsSection.tsx
 import React from "react";
-import { View, Text } from "@react-pdf/renderer";
+import { View, Text, Styles } from "@react-pdf/renderer";
 import { SkillGroup } from "@/types/resume";
 import { hasContent } from "../utils";
 
 interface SkillsSectionProps {
   skillGroups?: SkillGroup[];
-  styles: Record<string, any>;
+  styles: Record<string, Styles>;
 }
 
 export const SkillsSection: React.FC<SkillsSectionProps> = ({
