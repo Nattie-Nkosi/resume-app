@@ -267,269 +267,274 @@ export default function Home() {
 
   return (
     <div className="container mx-auto p-6 pt-8">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">Build Your Professional Resume</h1>
-          <p className="text-muted-foreground mt-2">
-            Create, customize, and download your resume for any job application.
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button onClick={exportResumeData} variant="outline">
-            <Download className="h-4 w-4 mr-2" />
-            Export Data
-          </Button>
-          <div className="relative">
-            <Button
-              variant="outline"
-              onClick={() => document.getElementById("import-file")?.click()}
-            >
-              <Upload className="h-4 w-4 mr-2" />
-              Import Data
-            </Button>
-            <input
-              id="import-file"
-              type="file"
-              accept=".json"
-              className="hidden"
-              onChange={importResumeData}
-            />
+      <div className="flex flex-col space-y-8">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-3xl font-bold">
+              Build Your Professional Resume
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              Create, customize, and download your resume for any job
+              application.
+            </p>
           </div>
-          <Button
-            onClick={togglePreview}
-            variant={showPreview ? "default" : "outline"}
-            className="flex items-center"
-          >
-            <Eye className="h-4 w-4 mr-2" />
-            {showPreview ? "Edit Resume" : "Preview Resume"}
-          </Button>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive">Reset</Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This will permanently delete all your resume data and cannot
-                  be undone.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={resetStore}>
-                  Reset
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
-      </div>
-
-      <ErrorBoundary>
-        {showPreview ? (
-          <ComprehensivePreview data={resumeData} />
-        ) : (
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <Tabs
-                value={activeTab}
-                onValueChange={setActiveTab}
-                className="w-full"
-              >
-                <TabsList className="flex flex-wrap mb-6 h-auto">
-                  {activeSectionData.map((section) => (
-                    <TabsTrigger
-                      key={section.id}
-                      value={section.id}
-                      className="flex items-center"
-                    >
-                      {section.icon}
-                      {section.label}
-                    </TabsTrigger>
-                  ))}
-
-                  {/* Add Section Button */}
-                  {optionalSections.length > 0 && (
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button variant="outline" size="sm" className="ml-2">
-                          <PlusCircle className="h-4 w-4 mr-2" />
-                          Add Section
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-56">
-                        <div className="space-y-2">
-                          {optionalSections.map((section) => (
-                            <div
-                              key={section.id}
-                              className="flex items-center py-1 cursor-pointer hover:bg-muted px-2 rounded"
-                              onClick={() => handleAddSection(section.id)}
-                            >
-                              {section.icon}
-                              <span>{section.label}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </PopoverContent>
-                    </Popover>
-                  )}
-                </TabsList>
-
-                {/* Section Content */}
-                <TabsContent value="personalInfo">
-                  <PersonalInfo
-                    onSubmit={updatePersonalInfo}
-                    defaultValues={resumeData.personalInfo}
-                  />
-                </TabsContent>
-
-                <TabsContent value="experiences">
-                  <Experience
-                    onSubmit={({ experiences }) =>
-                      updateExperiences(experiences)
-                    }
-                    defaultValues={{ experiences: resumeData.experiences }}
-                  />
-                </TabsContent>
-
-                <TabsContent value="education">
-                  <Education
-                    onSubmit={({ education }) => updateEducation(education)}
-                    defaultValues={{ education: resumeData.education }}
-                  />
-                </TabsContent>
-
-                <TabsContent value="skills">
-                  <Skills
-                    onSubmit={({ skillGroups }) => updateSkills(skillGroups)}
-                    defaultValues={{ skillGroups: resumeData.skillGroups }}
-                  />
-                </TabsContent>
-
-                {/* Optional Sections - only render if active */}
-                {activeSections.includes("projects") && (
-                  <TabsContent value="projects">
-                    <div className="flex justify-between items-center mb-4">
-                      <h2 className="text-2xl font-bold">Projects</h2>
-                      {!allSections.find((s) => s.id === "projects")
-                        ?.required && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => toggleSection("projects", false)}
-                          className="text-destructive hover:text-destructive"
-                        >
-                          Remove Section
-                        </Button>
-                      )}
-                    </div>
-                    <Projects
-                      onSubmit={({ projects }) => updateProjects(projects)}
-                      defaultValues={{ projects: resumeData.projects || [] }}
-                    />
-                  </TabsContent>
-                )}
-
-                {activeSections.includes("certificates") && (
-                  <TabsContent value="certificates">
-                    <div className="flex justify-between items-center mb-4">
-                      <h2 className="text-2xl font-bold">Certifications</h2>
-                      {!allSections.find((s) => s.id === "certificates")
-                        ?.required && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => toggleSection("certificates", false)}
-                          className="text-destructive hover:text-destructive"
-                        >
-                          Remove Section
-                        </Button>
-                      )}
-                    </div>
-                    <Certifications
-                      onSubmit={({ certificates }) =>
-                        updateCertificates(certificates)
-                      }
-                      defaultValues={{
-                        certificates: resumeData.certificates || [],
-                      }}
-                    />
-                  </TabsContent>
-                )}
-
-                {activeSections.includes("achievements") && (
-                  <TabsContent value="achievements">
-                    <div className="flex justify-between items-center mb-4">
-                      <h2 className="text-2xl font-bold">Key Achievements</h2>
-                      {!allSections.find((s) => s.id === "achievements")
-                        ?.required && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => toggleSection("achievements", false)}
-                          className="text-destructive hover:text-destructive"
-                        >
-                          Remove Section
-                        </Button>
-                      )}
-                    </div>
-                    <Achievements
-                      onSubmit={({ achievements }) =>
-                        updateAchievements(achievements)
-                      }
-                      defaultValues={{
-                        achievements: resumeData.achievements || [],
-                      }}
-                    />
-                  </TabsContent>
-                )}
-
-                {activeSections.includes("references") && (
-                  <TabsContent value="references">
-                    <div className="flex justify-between items-center mb-4">
-                      <h2 className="text-2xl font-bold">References</h2>
-                      {!allSections.find((s) => s.id === "references")
-                        ?.required && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => toggleSection("references", false)}
-                          className="text-destructive hover:text-destructive"
-                        >
-                          Remove Section
-                        </Button>
-                      )}
-                    </div>
-                    <References
-                      onSubmit={({ references }) =>
-                        updateReferences(references)
-                      }
-                      defaultValues={{
-                        references: resumeData.references || [],
-                      }}
-                    />
-                  </TabsContent>
-                )}
-              </Tabs>
-            </div>
-
-            <div className="mt-6 flex justify-between">
+          <div className="flex gap-2">
+            <Button onClick={exportResumeData} variant="outline">
+              <Download className="h-4 w-4 mr-2" />
+              Export Data
+            </Button>
+            <div className="relative">
               <Button
                 variant="outline"
-                onClick={handlePrevious}
-                disabled={activeSections.indexOf(activeTab) === 0}
+                onClick={() => document.getElementById("import-file")?.click()}
               >
-                Previous
+                <Upload className="h-4 w-4 mr-2" />
+                Import Data
               </Button>
-
-              <Button onClick={handleNext}>
-                {isLastTab ? "Preview Resume" : "Next"}
-              </Button>
+              <input
+                id="import-file"
+                type="file"
+                accept=".json"
+                className="hidden"
+                onChange={importResumeData}
+              />
             </div>
+            <Button
+              onClick={togglePreview}
+              variant={showPreview ? "default" : "outline"}
+              className="flex items-center"
+            >
+              <Eye className="h-4 w-4 mr-2" />
+              {showPreview ? "Edit Resume" : "Preview Resume"}
+            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive">Reset</Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will permanently delete all your resume data and cannot
+                    be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={resetStore}>
+                    Reset
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
-        )}
-      </ErrorBoundary>
+        </div>
+
+        <ErrorBoundary>
+          {showPreview ? (
+            <ComprehensivePreview data={resumeData} />
+          ) : (
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <Tabs
+                  value={activeTab}
+                  onValueChange={setActiveTab}
+                  className="w-full"
+                >
+                  <TabsList className="flex flex-wrap mb-6 h-auto">
+                    {activeSectionData.map((section) => (
+                      <TabsTrigger
+                        key={section.id}
+                        value={section.id}
+                        className="flex items-center"
+                      >
+                        {section.icon}
+                        {section.label}
+                      </TabsTrigger>
+                    ))}
+
+                    {/* Add Section Button */}
+                    {optionalSections.length > 0 && (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" size="sm" className="ml-2">
+                            <PlusCircle className="h-4 w-4 mr-2" />
+                            Add Section
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-56">
+                          <div className="space-y-2">
+                            {optionalSections.map((section) => (
+                              <div
+                                key={section.id}
+                                className="flex items-center py-1 cursor-pointer hover:bg-muted px-2 rounded"
+                                onClick={() => handleAddSection(section.id)}
+                              >
+                                {section.icon}
+                                <span>{section.label}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    )}
+                  </TabsList>
+
+                  {/* Section Content */}
+                  <TabsContent value="personalInfo">
+                    <PersonalInfo
+                      onSubmit={updatePersonalInfo}
+                      defaultValues={resumeData.personalInfo}
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="experiences">
+                    <Experience
+                      onSubmit={({ experiences }) =>
+                        updateExperiences(experiences)
+                      }
+                      defaultValues={{ experiences: resumeData.experiences }}
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="education">
+                    <Education
+                      onSubmit={({ education }) => updateEducation(education)}
+                      defaultValues={{ education: resumeData.education }}
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="skills">
+                    <Skills
+                      onSubmit={({ skillGroups }) => updateSkills(skillGroups)}
+                      defaultValues={{ skillGroups: resumeData.skillGroups }}
+                    />
+                  </TabsContent>
+
+                  {/* Optional Sections - only render if active */}
+                  {activeSections.includes("projects") && (
+                    <TabsContent value="projects">
+                      <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-2xl font-bold">Projects</h2>
+                        {!allSections.find((s) => s.id === "projects")
+                          ?.required && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => toggleSection("projects", false)}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            Remove Section
+                          </Button>
+                        )}
+                      </div>
+                      <Projects
+                        onSubmit={({ projects }) => updateProjects(projects)}
+                        defaultValues={{ projects: resumeData.projects || [] }}
+                      />
+                    </TabsContent>
+                  )}
+
+                  {activeSections.includes("certificates") && (
+                    <TabsContent value="certificates">
+                      <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-2xl font-bold">Certifications</h2>
+                        {!allSections.find((s) => s.id === "certificates")
+                          ?.required && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => toggleSection("certificates", false)}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            Remove Section
+                          </Button>
+                        )}
+                      </div>
+                      <Certifications
+                        onSubmit={({ certificates }) =>
+                          updateCertificates(certificates)
+                        }
+                        defaultValues={{
+                          certificates: resumeData.certificates || [],
+                        }}
+                      />
+                    </TabsContent>
+                  )}
+
+                  {activeSections.includes("achievements") && (
+                    <TabsContent value="achievements">
+                      <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-2xl font-bold">Key Achievements</h2>
+                        {!allSections.find((s) => s.id === "achievements")
+                          ?.required && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => toggleSection("achievements", false)}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            Remove Section
+                          </Button>
+                        )}
+                      </div>
+                      <Achievements
+                        onSubmit={({ achievements }) =>
+                          updateAchievements(achievements)
+                        }
+                        defaultValues={{
+                          achievements: resumeData.achievements || [],
+                        }}
+                      />
+                    </TabsContent>
+                  )}
+
+                  {activeSections.includes("references") && (
+                    <TabsContent value="references">
+                      <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-2xl font-bold">References</h2>
+                        {!allSections.find((s) => s.id === "references")
+                          ?.required && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => toggleSection("references", false)}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            Remove Section
+                          </Button>
+                        )}
+                      </div>
+                      <References
+                        onSubmit={({ references }) =>
+                          updateReferences(references)
+                        }
+                        defaultValues={{
+                          references: resumeData.references || [],
+                        }}
+                      />
+                    </TabsContent>
+                  )}
+                </Tabs>
+              </div>
+
+              <div className="mt-6 flex justify-between">
+                <Button
+                  variant="outline"
+                  onClick={handlePrevious}
+                  disabled={activeSections.indexOf(activeTab) === 0}
+                >
+                  Previous
+                </Button>
+
+                <Button onClick={handleNext}>
+                  {isLastTab ? "Preview Resume" : "Next"}
+                </Button>
+              </div>
+            </div>
+          )}
+        </ErrorBoundary>
+      </div>
     </div>
   );
 }
