@@ -1,12 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/components/resume-preview/utils/pdf/components/SkillsSection.tsx
 import React from "react";
-import { View, Text, Styles } from "@react-pdf/renderer";
+import { View, Text } from "@react-pdf/renderer";
 import { SkillGroup } from "@/types/resume";
 import { hasContent } from "../utils";
 
 interface SkillsSectionProps {
   skillGroups?: SkillGroup[];
-  styles: Record<string, Styles>;
+  styles: Record<string, any>;
 }
 
 export const SkillsSection: React.FC<SkillsSectionProps> = ({

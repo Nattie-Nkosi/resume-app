@@ -40,12 +40,6 @@ const Footer = () => {
                 <li>
                   <FooterLink href="/guide">Resume Guide</FooterLink>
                 </li>
-                <li>
-                  <FooterLink href="/blog">Blog</FooterLink>
-                </li>
-                <li>
-                  <FooterLink href="/faq">FAQ</FooterLink>
-                </li>
               </ul>
             </div>
 
@@ -60,9 +54,6 @@ const Footer = () => {
                 </li>
                 <li>
                   <FooterLink href="/terms">Terms of Service</FooterLink>
-                </li>
-                <li>
-                  <FooterLink href="/cookies">Cookie Policy</FooterLink>
                 </li>
               </ul>
             </div>

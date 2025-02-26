@@ -75,7 +75,7 @@ export const ResumePDF: React.FC<ResumePDFProps> = ({
               styles={styles}
             />
 
-            {/* References Section - add this section */}
+            {/* References Section */}
             <ReferencesSection references={data.references} styles={styles} />
           </View>
         </View>

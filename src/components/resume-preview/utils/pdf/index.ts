@@ -1,3 +1,4 @@
+// src/components/resume-preview/utils/pdf/index.ts
 import { pdf } from "@react-pdf/renderer";
 import { saveAs } from "file-saver";
 import type { ResumeData } from "@/types/resume";
@@ -18,7 +19,6 @@ export const exportResumeToPDF = async (
   theme: ThemeKey = "classic"
 ): Promise<void> => {
   try {
-
     const blob = await pdf(React.createElement(ResumePDF, { data, theme })).toBlob();
 
     // Save the PDF

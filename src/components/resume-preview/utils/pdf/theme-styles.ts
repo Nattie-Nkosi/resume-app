@@ -71,10 +71,11 @@ export const themeStyles = {
 
 export type ThemeKey = keyof typeof themeStyles;
 
-// Create style generator function
+// Create style generator function - fixed type definition
 export const createStyles = (theme: ThemeKey = "classic") => {
   const themeConfig = themeStyles[theme] || themeStyles.classic;
 
+  // No type annotation here - let StyleSheet.create determine the type
   return StyleSheet.create({
     page: {
       flexDirection: "column",
@@ -85,8 +86,8 @@ export const createStyles = (theme: ThemeKey = "classic") => {
     header: {
       flexDirection: "row",
       justifyContent: "space-between",
-      marginBottom: 12, // Further reduced
-      paddingBottom: 6, // Further reduced
+      marginBottom: 12,
+      paddingBottom: 6,
       borderBottom: `1px solid ${themeConfig.border}`,
     },
     headerLeft: {
@@ -99,94 +100,93 @@ export const createStyles = (theme: ThemeKey = "classic") => {
       alignItems: "flex-end",
     },
     name: {
-      fontSize: 20, // Further reduced
+      fontSize: 20,
       fontWeight: themeConfig.headingWeight,
-      marginBottom: 2, // Further reduced
+      marginBottom: 2,
       color: themeConfig.primary,
     },
     title: {
-      fontSize: 12, // Further reduced
+      fontSize: 12,
       color: themeConfig.secondary,
-      marginBottom: 2, // Further reduced
+      marginBottom: 2,
     },
     contactItem: {
-      fontSize: 8, // Further reduced
-      marginBottom: 1, // Further reduced
+      fontSize: 8,
+      marginBottom: 1,
       color: themeConfig.secondary,
     },
     link: {
-      fontSize: 8, // Further reduced
+      fontSize: 8,
       color: themeConfig.link,
       textDecoration: "none",
-      marginBottom: 1, // Further reduced
+      marginBottom: 1,
     },
     summary: {
-      fontSize: 8, // Further reduced
-      marginBottom: 10, // Further reduced
-      lineHeight: 1.2, // Further reduced
+      fontSize: 8,
+      marginBottom: 10,
+      lineHeight: 1.2,
       color: themeConfig.secondary,
     },
     divider: {
       borderBottom: `1px solid ${themeConfig.border}`,
-      marginTop: 3, // Further reduced
-      marginBottom: 6, // Further reduced
+      marginTop: 3,
+      marginBottom: 6,
     },
     socialLinks: {
       flexDirection: "row",
-      marginTop: 3, // Further reduced
+      marginTop: 3,
     },
     socialLink: {
-      fontSize: 7, // Further reduced
+      fontSize: 7,
       color: themeConfig.link,
-      marginLeft: 6, // Further reduced
+      marginLeft: 6,
       textDecoration: "none",
     },
     contentContainer: {
       flexDirection: "row",
-      marginTop: 6, // Further reduced
-      gap: 15, // Add gap between columns
+      marginTop: 6,
+      gap: 15,
     },
     leftColumn: {
-      width: "30%", // Smaller left column
-      paddingRight: 0, // Remove padding, use gap instead
+      width: "30%",
+      paddingRight: 0,
     },
     rightColumn: {
-      width: "70%", // Larger right column
+      width: "70%",
     },
     sectionTitle: {
-      fontSize: 10, // Further reduced
+      fontSize: 10,
       fontWeight: themeConfig.headingWeight,
-      marginBottom: 4, // Further reduced
+      marginBottom: 4,
       color: themeConfig.primary,
       textTransform: "uppercase",
     },
     sectionContent: {
-      marginBottom: 10, // Further reduced
+      marginBottom: 10,
     },
     categoryTitle: {
-      fontSize: 9, // Further reduced
+      fontSize: 9,
       fontWeight:
         themeConfig.headingWeight === "bold"
           ? "semibold"
           : themeConfig.headingWeight,
-      marginBottom: 2, // Further reduced
+      marginBottom: 2,
       color: themeConfig.primary,
     },
     skillContainer: {
       flexDirection: "row",
       flexWrap: "wrap",
-      marginBottom: 4, // Further reduced
+      marginBottom: 4,
     },
     skillItem: {
-      fontSize: 7, // Further reduced
+      fontSize: 7,
       backgroundColor: themeConfig.skillBg,
-      padding: "1 3", // Further reduced
-      marginRight: 3, // Further reduced
-      marginBottom: 2, // Further reduced
+      padding: "1 3",
+      marginRight: 3,
+      marginBottom: 2,
       borderRadius: 2,
       color: themeConfig.skillText,
     },
-    // Even more compact skills
     compactSkillItem: {
       fontSize: 7,
       backgroundColor: themeConfig.skillBg,
@@ -196,7 +196,6 @@ export const createStyles = (theme: ThemeKey = "classic") => {
       borderRadius: 1,
       color: themeConfig.skillText,
     },
-    // Multi-column skills layout
     skillsGrid: {
       display: "flex",
       flexDirection: "row",
@@ -208,17 +207,17 @@ export const createStyles = (theme: ThemeKey = "classic") => {
       paddingRight: 5,
     },
     experienceItem: {
-      marginBottom: 8, // Further reduced
-      borderLeft: `1.5px solid ${themeConfig.border}`, // Thinner border
-      paddingLeft: 6, // Further reduced
+      marginBottom: 8,
+      borderLeft: `1.5px solid ${themeConfig.border}`,
+      paddingLeft: 6,
     },
     experienceHeader: {
       flexDirection: "row",
       justifyContent: "space-between",
-      marginBottom: 1.5, // Further reduced
+      marginBottom: 1.5,
     },
     positionTitle: {
-      fontSize: 9, // Further reduced
+      fontSize: 9,
       fontWeight:
         themeConfig.headingWeight === "bold"
           ? "semibold"
@@ -226,28 +225,28 @@ export const createStyles = (theme: ThemeKey = "classic") => {
       color: themeConfig.primary,
     },
     company: {
-      fontSize: 8, // Further reduced
+      fontSize: 8,
       color: themeConfig.secondary,
-      marginBottom: 1.5, // Further reduced
+      marginBottom: 1.5,
     },
     dateRange: {
-      fontSize: 7, // Further reduced
+      fontSize: 7,
       color: themeConfig.secondary,
       backgroundColor: themeConfig.skillBg,
-      padding: "0.5 3", // Further reduced
-      borderRadius: 1.5, // Further reduced
+      padding: "0.5 3",
+      borderRadius: 1.5,
     },
     description: {
-      fontSize: 7, // Further reduced
-      lineHeight: 1.3, // Further reduced
-      marginTop: 1.5, // Further reduced
+      fontSize: 7,
+      lineHeight: 1.3,
+      marginTop: 1.5,
       color: themeConfig.secondary,
     },
     educationItem: {
-      marginBottom: 5, // Further reduced
+      marginBottom: 5,
     },
     degree: {
-      fontSize: 9, // Further reduced
+      fontSize: 9,
       fontWeight:
         themeConfig.headingWeight === "bold"
           ? "semibold"
@@ -255,38 +254,36 @@ export const createStyles = (theme: ThemeKey = "classic") => {
       color: themeConfig.primary,
     },
     institution: {
-      fontSize: 8, // Further reduced
+      fontSize: 8,
       color: themeConfig.secondary,
-      marginBottom: 0.5, // Further reduced
+      marginBottom: 0.5,
     },
     toolsList: {
       flexDirection: "row",
       flexWrap: "wrap",
-      marginBottom: 4, // Further reduced
+      marginBottom: 4,
     },
     techItem: {
-      fontSize: 7, // Further reduced
+      fontSize: 7,
       backgroundColor: themeConfig.skillBg,
-      padding: "0.5 3", // Further reduced
-      marginRight: 3, // Further reduced
-      marginBottom: 2, // Further reduced
-      borderRadius: 1.5, // Further reduced
+      padding: "0.5 3",
+      marginRight: 3,
+      marginBottom: 2,
+      borderRadius: 1.5,
       color: themeConfig.skillText,
     },
     projectItem: {
-      marginBottom: 7, // Further reduced
-      borderLeft: `1.5px solid ${themeConfig.border}`, // Thinner border
-      paddingLeft: 5, // Further reduced
+      marginBottom: 7,
+      borderLeft: `1.5px solid ${themeConfig.border}`,
+      paddingLeft: 5,
     },
     certificateItem: {
-      marginBottom: 6, // Further reduced
+      marginBottom: 6,
     },
-    // Improved certificate section
     certificateContent: {
       marginTop: 1,
       marginBottom: 2,
     },
-    // Better formatted certification URL
     credentialLink: {
       fontSize: 7,
       color: themeConfig.link,
@@ -303,16 +300,15 @@ export const createStyles = (theme: ThemeKey = "classic") => {
       marginLeft: 2,
     },
     achievementItem: {
-      marginBottom: 7, // Further reduced
-      borderLeft: `1.5px solid ${themeConfig.border}`, // Thinner border
-      paddingLeft: 5, // Further reduced
+      marginBottom: 7,
+      borderLeft: `1.5px solid ${themeConfig.border}`,
+      paddingLeft: 5,
     },
     languageItem: {
-      fontSize: 7, // Further reduced
-      marginBottom: 1.5, // Further reduced
+      fontSize: 7,
+      marginBottom: 1.5,
       color: themeConfig.secondary,
     },
-    // New styles for better education alignment
     educationHeader: {
       flexDirection: "row",
       justifyContent: "space-between",
@@ -327,16 +323,13 @@ export const createStyles = (theme: ThemeKey = "classic") => {
       color: themeConfig.secondary,
       textAlign: "right",
     },
-    // Skills section optimization
     skillGroupContainer: {
       marginBottom: 3,
     },
-    // Icon styles
     smallIcon: {
       width: 8,
       height: 8,
     },
-    // Two-column skills layout
     skillsSection: {
       display: "flex",
       flexDirection: "column",
@@ -353,7 +346,6 @@ export const createStyles = (theme: ThemeKey = "classic") => {
     skillGroupRight: {
       width: "50%",
     },
-    // Single page optimization
     singlePageOptimized: {
       lineHeight: 1.2,
     },
@@ -362,6 +354,6 @@ export const createStyles = (theme: ThemeKey = "classic") => {
       flexDirection: "row",
       flexWrap: "wrap",
       marginBottom: 2,
-    }
+    },
   });
-};
+}
