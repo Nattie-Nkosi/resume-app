@@ -13,6 +13,7 @@ import {
   MapPin,
   Award,
   Trophy,
+  LinkIcon,
 } from "lucide-react";
 import { ThemeStyles } from "../theme-config";
 
@@ -247,6 +248,27 @@ const CompactLayout = React.forwardRef<HTMLDivElement, CompactLayoutProps>(
                               {cert.expiration &&
                                 ` (Expires: ${formatDate(cert.expiration)})`}
                             </div>
+                            {cert.credentialId && (
+                              <div
+                                className={`${theme.secondary} text-xs mt-1`}
+                              >
+                                ID: {cert.credentialId}
+                              </div>
+                            )}
+                            {/* Add this section to display the credential URL */}
+                            {cert.link && (
+                              <div className={`${theme.link} text-xs mt-1`}>
+                                <a
+                                  href={cert.link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center gap-1"
+                                >
+                                  <LinkIcon className="w-3 h-3" /> Verify
+                                  credential
+                                </a>
+                              </div>
+                            )}
                           </div>
                         ))}
                     </div>

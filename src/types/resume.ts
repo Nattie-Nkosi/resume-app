@@ -109,7 +109,7 @@ export interface Reference {
   name: string;
   company: string;
   position: string;
-  contact: string;
+  contact: string; // email or phone
   relationship: string;
 }
 

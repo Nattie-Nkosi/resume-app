@@ -1,6 +1,6 @@
 // src/components/resume-preview/utils/pdf/components/CertificatesSection.tsx
 import React from "react";
-import { View, Text } from "@react-pdf/renderer";
+import { View, Text, Link } from "@react-pdf/renderer";
 import { Certificate } from "@/types/resume";
 import { formatDate, hasContent } from "../utils";
 
@@ -34,10 +34,36 @@ export const CertificatesSection: React.FC<CertificatesSectionProps> = ({
               {formatDate(cert.date)}
               {hasContent(cert.expiration) &&
                 cert.expiration &&
-                ` - ${formatDate(cert.expiration)}`}
+                ` - Expires: ${formatDate(cert.expiration)}`}
             </Text>
             {hasContent(cert.credentialId) && (
               <Text style={styles.description}>ID: {cert.credentialId}</Text>
+            )}
+            {/* Improved certification URL display */}
+            {hasContent(cert.link) && (
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginTop: 2,
+                }}
+              >
+                <Text style={{ fontSize: 7, color: "#555555" }}>Verify: </Text>
+                <Link src={cert.link} style={styles.link}>
+                  <Text
+                    style={{
+                      fontSize: 7,
+                      color: "#0066CC",
+                      textDecoration: "none",
+                    }}
+                  >
+                    {hasContent(cert.link) &&
+                      (cert.link && cert.link.length > 35
+                        ? cert.link.substring(0, 35) + "..."
+                        : cert.link)}
+                  </Text>
+                </Link>
+              </View>
             )}
           </View>
         ))}

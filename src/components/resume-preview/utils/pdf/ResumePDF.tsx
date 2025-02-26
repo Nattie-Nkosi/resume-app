@@ -13,6 +13,7 @@ import { ProjectsSection } from "./components/ProjectsSection";
 import { CertificatesSection } from "./components/CertificatesSection";
 import { AchievementsSection } from "./components/AchievementsSection";
 import { LanguagesSection } from "./components/LanguagesSection";
+import { ReferencesSection } from "./components/ReferencesSection";
 
 interface ResumePDFProps {
   data: ResumeData;
@@ -54,6 +55,9 @@ export const ResumePDF: React.FC<ResumePDFProps> = ({
 
             {/* Languages Section */}
             <LanguagesSection languages={data.languages} styles={styles} />
+
+            {/* References Section - add this section */}
+            <ReferencesSection references={data.references} styles={styles} />
           </View>
 
           {/* Right Column */}

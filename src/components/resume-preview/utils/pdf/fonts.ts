@@ -62,4 +62,7 @@ export const registerFonts = () => {
     src: "https://fonts.gstatic.com/s/playfairdisplay/v21/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKdFvXDXbtY.ttf",
     fontWeight: "normal",
   });
+
+
+
 };

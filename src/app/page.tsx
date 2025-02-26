@@ -8,6 +8,7 @@ import Skills from "@/components/skills";
 import Projects from "@/components/projects";
 import Certifications from "@/components/certifications";
 import Achievements from "@/components/achievements";
+import References from "@/components/references";
 import ComprehensivePreview from "@/components/resume-preview/ComprehensivePreview";
 import { Button } from "@/components/ui/button";
 import { useResumeStore } from "./store/useResumeStore";
@@ -35,6 +36,7 @@ import {
   Award,
   Trophy,
   PlusCircle,
+  Users,
 } from "lucide-react";
 import ErrorBoundary from "@/components/error-boundary";
 import { saveAs } from "file-saver";
@@ -59,6 +61,7 @@ export default function Home() {
   const updateEducation = useResumeStore((state) => state.updateEducation);
   const updateSkills = useResumeStore((state) => state.updateSkills);
   const updateProjects = useResumeStore((state) => state.updateProjects);
+  const updateReferences = useResumeStore((state) => state.updateReferences);
   const updateCertificates = useResumeStore(
     (state) => state.updateCertificates
   );
@@ -109,6 +112,12 @@ export default function Home() {
       id: "achievements",
       icon: <Trophy className="h-4 w-4 mr-2" />,
       label: "Achievements",
+      required: false,
+    },
+    {
+      id: "references",
+      icon: <Users className="h-4 w-4 mr-2" />,
+      label: "References",
       required: false,
     },
   ];
@@ -466,6 +475,33 @@ export default function Home() {
                       }
                       defaultValues={{
                         achievements: resumeData.achievements || [],
+                      }}
+                    />
+                  </TabsContent>
+                )}
+
+                {activeSections.includes("references") && (
+                  <TabsContent value="references">
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-2xl font-bold">References</h2>
+                      {!allSections.find((s) => s.id === "references")
+                        ?.required && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => toggleSection("references", false)}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          Remove Section
+                        </Button>
+                      )}
+                    </div>
+                    <References
+                      onSubmit={({ references }) =>
+                        updateReferences(references)
+                      }
+                      defaultValues={{
+                        references: resumeData.references || [],
                       }}
                     />
                   </TabsContent>

@@ -23,6 +23,7 @@ interface ResumeStore {
   updateProjects: (projects: ResumeData['projects']) => void;
   updateCertificates: (certificates: ResumeData['certificates']) => void;
   updateAchievements: (achievements: ResumeData['achievements']) => void;
+  updateReferences: (references: ResumeData['references']) => void;
   resetStore: () => void;
   toggleSection: (section: string, active: boolean) => void;
 }
@@ -77,6 +78,13 @@ const initialState: ResumeData = {
     organization: '',
     date: '',
     description: ''
+  }],
+  references: [{ // Add this section
+    name: '',
+    company: '',
+    position: '',
+    contact: '',
+    relationship: ''
   }]
 }
 
@@ -87,6 +95,41 @@ const defaultActiveSections = [
   'education',
   'skills',
 ];
+
+// Create a custom storage implementation that checks for window/localStorage
+const createCustomStorage = () => {
+  // Check if we're in a browser environment
+  const isClient = typeof window !== 'undefined'
+
+  return {
+    getItem: (name: string) => {
+      if (!isClient) return null
+      try {
+        const value = localStorage.getItem(name)
+        return value ? JSON.parse(value) : null
+      } catch (error) {
+        console.error('Error accessing localStorage:', error)
+        return null
+      }
+    },
+    setItem: (name: string, value: unknown) => {
+      if (!isClient) return
+      try {
+        localStorage.setItem(name, JSON.stringify(value))
+      } catch (error) {
+        console.error('Error writing to localStorage:', error)
+      }
+    },
+    removeItem: (name: string) => {
+      if (!isClient) return
+      try {
+        localStorage.removeItem(name)
+      } catch (error) {
+        console.error('Error removing from localStorage:', error)
+      }
+    }
+  }
+}
 
 export const useResumeStore = create<ResumeStore>()(
   persist(
@@ -162,6 +205,18 @@ export const useResumeStore = create<ResumeStore>()(
             : [...state.activeSections, 'achievements']
         })),
 
+      updateReferences: (references) =>
+        set((state) => ({
+          resumeData: {
+            ...state.resumeData,
+            references
+          },
+          // Only add to active sections if not already there
+          activeSections: state.activeSections.includes('references')
+            ? state.activeSections
+            : [...state.activeSections, 'references']
+        })),
+
       toggleSection: (section, active) =>
         set((state) => {
           if (active && !state.activeSections.includes(section)) {
@@ -188,31 +243,7 @@ export const useResumeStore = create<ResumeStore>()(
     }),
     {
       name: 'resume-storage',
-      storage: {
-        getItem: (name) => {
-          try {
-            const value = localStorage.getItem(name);
-            return value ? JSON.parse(value) : null;
-          } catch (error) {
-            console.error('Error accessing localStorage:', error);
-            return null;
-          }
-        },
-        setItem: (name, value) => {
-          try {
-            localStorage.setItem(name, JSON.stringify(value));
-          } catch (error) {
-            console.error('Error writing to localStorage:', error);
-          }
-        },
-        removeItem: (name) => {
-          try {
-            localStorage.removeItem(name);
-          } catch (error) {
-            console.error('Error removing from localStorage:', error);
-          }
-        }
-      }
+      storage: createCustomStorage()
     }
   )
 )
