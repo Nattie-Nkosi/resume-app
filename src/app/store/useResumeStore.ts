@@ -3,6 +3,13 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type {
   ResumeData,
+  PersonalInfo,
+  Experience,
+  Education,
+  SkillGroup,
+  Project,
+  Certificate,
+  Achievement,
   SkillCategory
 } from '@/types/resume'
 
@@ -14,9 +21,11 @@ interface ResumeStore {
   updateEducation: (education: ResumeData['education']) => void;
   updateSkills: (skillGroups: ResumeData['skillGroups']) => void;
   updateProjects: (projects: ResumeData['projects']) => void;
+  updateCertificates: (certificates: ResumeData['certificates']) => void;
+  updateAchievements: (achievements: ResumeData['achievements']) => void;
   resetStore: () => void;
+  toggleSection: (section: string, active: boolean) => void;
 }
-
 const initialState: ResumeData = {
   personalInfo: {
     title: '',
@@ -54,11 +63,30 @@ const initialState: ResumeData = {
     technologies: [],
     startDate: '',
     endDate: '',
+  }],
+  certificates: [{
+    name: '',
+    issuer: '',
+    date: '',
+    expiration: '',
+    credentialId: '',
+    link: ''
+  }],
+  achievements: [{
+    title: '',
+    organization: '',
+    date: '',
+    description: ''
   }]
 }
 
 // Default active sections
-const defaultActiveSections = ['personalInfo', 'experiences', 'education', 'skills', 'projects'];
+const defaultActiveSections = [
+  'personalInfo',
+  'experiences',
+  'education',
+  'skills',
+];
 
 export const useResumeStore = create<ResumeStore>()(
   persist(
@@ -103,8 +131,55 @@ export const useResumeStore = create<ResumeStore>()(
           resumeData: {
             ...state.resumeData,
             projects
-          }
+          },
+          // Only add to active sections if not already there
+          activeSections: state.activeSections.includes('projects')
+            ? state.activeSections
+            : [...state.activeSections, 'projects']
         })),
+
+      updateCertificates: (certificates) =>
+        set((state) => ({
+          resumeData: {
+            ...state.resumeData,
+            certificates
+          },
+          // Only add to active sections if not already there
+          activeSections: state.activeSections.includes('certificates')
+            ? state.activeSections
+            : [...state.activeSections, 'certificates']
+        })),
+
+      updateAchievements: (achievements) =>
+        set((state) => ({
+          resumeData: {
+            ...state.resumeData,
+            achievements
+          },
+          // Only add to active sections if not already there
+          activeSections: state.activeSections.includes('achievements')
+            ? state.activeSections
+            : [...state.activeSections, 'achievements']
+        })),
+
+      toggleSection: (section, active) =>
+        set((state) => {
+          if (active && !state.activeSections.includes(section)) {
+            // Add section to active sections
+            return {
+              activeSections: [...state.activeSections, section]
+            };
+          } else if (!active && state.activeSections.includes(section)) {
+            // Remove section from active sections if it's not a required section
+            if (defaultActiveSections.includes(section)) {
+              return state; // Don't remove required sections
+            }
+            return {
+              activeSections: state.activeSections.filter(s => s !== section)
+            };
+          }
+          return state; // No change needed
+        }),
 
       resetStore: () => set({
         resumeData: initialState,

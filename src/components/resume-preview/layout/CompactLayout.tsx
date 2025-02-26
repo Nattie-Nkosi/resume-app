@@ -11,6 +11,8 @@ import {
   Mail,
   Phone,
   MapPin,
+  Award,
+  Trophy,
 } from "lucide-react";
 import { ThemeStyles } from "../theme-config";
 
@@ -22,8 +24,15 @@ interface CompactLayoutProps {
 
 const CompactLayout = React.forwardRef<HTMLDivElement, CompactLayoutProps>(
   ({ data, theme, isPrintView = false }, ref) => {
-    const { personalInfo, experiences, education, skillGroups, projects } =
-      data;
+    const {
+      personalInfo,
+      experiences,
+      education,
+      skillGroups,
+      projects,
+      certificates,
+      achievements,
+    } = data;
     const containerClass = isPrintView
       ? "p-6 max-w-full print:p-5 print:shadow-none"
       : "w-full max-w-4xl mx-auto";
@@ -124,187 +133,292 @@ const CompactLayout = React.forwardRef<HTMLDivElement, CompactLayoutProps>(
             {/* Left column: Skills and Education */}
             <div className="space-y-6">
               {/* Skills Section */}
-              {skillGroups.length > 0 && (
-                <div className="pdf-section" data-pdf-section="skills">
-                  <h2
-                    className={`text-base font-semibold ${theme.heading} mb-3 uppercase tracking-wider`}
-                  >
-                    Skills
-                  </h2>
-                  <div className="space-y-4">
-                    {skillGroups.map((group, index) => (
-                      <div key={index} className="page-break-inside-avoid">
-                        <h3
-                          className={`font-medium ${theme.primary} text-sm mb-2`}
-                        >
-                          {group.category}
-                        </h3>
-                        <div className="flex flex-wrap gap-1">
-                          {group.skills.map((skill, skillIndex) => (
-                            <span
-                              key={skillIndex}
-                              className={`inline-block text-xs font-medium bg-gray-100 px-2 py-1 rounded mb-2 ${theme.primary}`}
+              {skillGroups &&
+                skillGroups.length > 0 &&
+                skillGroups.some((group) =>
+                  group.skills.some((skill) => skill.name)
+                ) && (
+                  <div className="pdf-section" data-pdf-section="skills">
+                    <h2
+                      className={`text-base font-semibold ${theme.heading} mb-3 uppercase tracking-wider`}
+                    >
+                      Skills
+                    </h2>
+                    <div className="space-y-4">
+                      {skillGroups
+                        .filter((group) =>
+                          group.skills.some((skill) => skill.name)
+                        )
+                        .map((group, index) => (
+                          <div key={index} className="page-break-inside-avoid">
+                            <h3
+                              className={`font-medium ${theme.primary} text-sm mb-2`}
                             >
-                              {skill.name}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
+                              {group.category}
+                            </h3>
+                            <div className="flex flex-wrap gap-1">
+                              {group.skills
+                                .filter((skill) => skill.name)
+                                .map((skill, skillIndex) => (
+                                  <span
+                                    key={skillIndex}
+                                    className={`inline-block text-xs font-medium bg-gray-100 px-2 py-1 rounded mb-2 ${theme.primary}`}
+                                  >
+                                    {skill.name}
+                                  </span>
+                                ))}
+                            </div>
+                          </div>
+                        ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
               {/* Education Section */}
-              {education.length > 0 && (
-                <div className="pdf-section" data-pdf-section="education">
-                  <h2
-                    className={`text-base font-semibold ${theme.heading} mb-3 uppercase tracking-wider`}
-                  >
-                    Education
-                  </h2>
-                  <div className="space-y-3">
-                    {education.map((edu, index) => (
-                      <div key={index} className="mb-3 page-break-inside-avoid">
-                        <h3 className={`font-medium ${theme.primary} text-sm`}>
-                          {edu.degree} {edu.field && `in ${edu.field}`}
-                        </h3>
-                        <div
-                          className={`${theme.secondary} text-xs font-medium mt-1`}
-                        >
-                          {edu.institution}
-                        </div>
-                        <div className={`${theme.secondary} text-xs mt-1`}>
-                          {formatDate(edu.startDate)} -{" "}
-                          {edu.endDate ? formatDate(edu.endDate) : "Present"}
-                        </div>
-                      </div>
-                    ))}
+              {education &&
+                education.length > 0 &&
+                education.some((edu) => edu.institution || edu.degree) && (
+                  <div className="pdf-section" data-pdf-section="education">
+                    <h2
+                      className={`text-base font-semibold ${theme.heading} mb-3 uppercase tracking-wider`}
+                    >
+                      Education
+                    </h2>
+                    <div className="space-y-3">
+                      {education
+                        .filter((edu) => edu.institution || edu.degree)
+                        .map((edu, index) => (
+                          <div
+                            key={index}
+                            className="mb-3 page-break-inside-avoid"
+                          >
+                            <h3
+                              className={`font-medium ${theme.primary} text-sm`}
+                            >
+                              {edu.degree} {edu.field && `in ${edu.field}`}
+                            </h3>
+                            <div
+                              className={`${theme.secondary} text-xs font-medium mt-1`}
+                            >
+                              {edu.institution}
+                            </div>
+                            <div className={`${theme.secondary} text-xs mt-1`}>
+                              {formatDate(edu.startDate)} -{" "}
+                              {edu.currentlyEnrolled
+                                ? "Present"
+                                : formatDate(edu.endDate)}
+                            </div>
+                          </div>
+                        ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Languages, if present */}
-              {data.languages && data.languages.length > 0 && (
-                <div className="pdf-section" data-pdf-section="languages">
-                  <h2
-                    className={`text-base font-semibold ${theme.heading} mb-3 uppercase tracking-wider`}
-                  >
-                    Languages
-                  </h2>
-                  <div className="flex flex-wrap gap-2">
-                    {data.languages.map((language, index) => (
-                      <div key={index} className="text-xs">
-                        <span className="font-medium">{language.name}</span>
-                        <span className={`${theme.secondary} ml-1`}>
-                          ({language.proficiency})
-                        </span>
-                      </div>
-                    ))}
+              {/* Certifications Section */}
+              {certificates &&
+                certificates.length > 0 &&
+                certificates.some((cert) => cert.name) && (
+                  <div className="pdf-section" data-pdf-section="certificates">
+                    <h2
+                      className={`text-base font-semibold ${theme.heading} mb-3 uppercase tracking-wider flex items-center gap-1`}
+                    >
+                      <Award className="w-4 h-4" /> Certifications
+                    </h2>
+                    <div className="space-y-3">
+                      {certificates
+                        .filter((cert) => cert.name)
+                        .map((cert, index) => (
+                          <div
+                            key={index}
+                            className="mb-3 page-break-inside-avoid"
+                          >
+                            <h3
+                              className={`font-medium ${theme.primary} text-sm`}
+                            >
+                              {cert.name}
+                            </h3>
+                            <div
+                              className={`${theme.secondary} text-xs font-medium mt-1`}
+                            >
+                              {cert.issuer}
+                            </div>
+                            <div className={`${theme.secondary} text-xs mt-1`}>
+                              {formatDate(cert.date)}
+                              {cert.expiration &&
+                                ` (Expires: ${formatDate(cert.expiration)})`}
+                            </div>
+                          </div>
+                        ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
 
             {/* Right column: Experience and Projects */}
             <div className="md:col-span-2">
               {/* Experience Section */}
-              {experiences.length > 0 && (
-                <div className="mb-6 pdf-section" data-pdf-section="experience">
-                  <h2
-                    className={`text-base font-semibold ${theme.heading} mb-3 uppercase tracking-wider`}
+              {experiences &&
+                experiences.length > 0 &&
+                experiences.some((exp) => exp.company || exp.position) && (
+                  <div
+                    className="mb-6 pdf-section"
+                    data-pdf-section="experience"
                   >
-                    Professional Experience
-                  </h2>
-                  <div className="space-y-4">
-                    {experiences.map((exp, index) => (
-                      <div
-                        key={index}
-                        className="mb-4 page-break-inside-avoid border-l-2 pl-4 border-gray-200"
-                      >
-                        <div className="flex justify-between items-start flex-wrap">
-                          <div>
-                            <h3
-                              className={`font-semibold ${theme.primary} text-sm`}
-                            >
-                              {exp.position}
-                            </h3>
-                            <div
-                              className={`${theme.secondary} text-xs font-medium mt-1`}
-                            >
-                              {exp.company}
-                              {exp.location && `, ${exp.location}`}
-                            </div>
-                          </div>
+                    <h2
+                      className={`text-base font-semibold ${theme.heading} mb-3 uppercase tracking-wider`}
+                    >
+                      Professional Experience
+                    </h2>
+                    <div className="space-y-4">
+                      {experiences
+                        .filter((exp) => exp.company || exp.position)
+                        .map((exp, index) => (
                           <div
-                            className={`${theme.secondary} text-xs mt-1 bg-gray-100 px-2 py-1 rounded`}
+                            key={index}
+                            className="mb-4 page-break-inside-avoid border-l-2 pl-4 border-gray-200"
                           >
-                            {formatDate(exp.startDate)} -{" "}
-                            {exp.endDate ? formatDate(exp.endDate) : "Present"}
-                          </div>
-                        </div>
-                        <p
-                          className={`text-xs ${theme.primary} mt-2 whitespace-pre-line leading-relaxed`}
-                        >
-                          {exp.description}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Projects Section (if present and space allows) */}
-              {projects && projects.length > 0 && (
-                <div className="pdf-section" data-pdf-section="projects">
-                  <h2
-                    className={`text-base font-semibold ${theme.heading} mb-3 uppercase tracking-wider`}
-                  >
-                    Projects
-                  </h2>
-                  <div className="space-y-4">
-                    {projects.slice(0, 2).map((project, index) => (
-                      <div
-                        key={index}
-                        className="mb-4 page-break-inside-avoid border-l-2 pl-4 border-gray-200"
-                      >
-                        <div className="flex justify-between items-start flex-wrap">
-                          <h3
-                            className={`font-semibold ${theme.primary} text-sm`}
-                          >
-                            {project.title}
-                          </h3>
-                          <div
-                            className={`${theme.secondary} text-xs bg-gray-100 px-2 py-1 rounded`}
-                          >
-                            {formatDate(project.startDate)} -{" "}
-                            {project.endDate
-                              ? formatDate(project.endDate)
-                              : "Present"}
-                          </div>
-                        </div>
-                        <p
-                          className={`text-xs ${theme.primary} mt-2 leading-relaxed`}
-                        >
-                          {project.description}
-                        </p>
-                        {project.technologies && (
-                          <div className="flex flex-wrap gap-1 mt-2">
-                            {project.technologies.map((tech, techIndex) => (
-                              <span
-                                key={techIndex}
-                                className={`inline-block text-xs bg-gray-100 px-2 py-0.5 rounded ${theme.secondary}`}
+                            <div className="flex justify-between items-start flex-wrap">
+                              <div>
+                                <h3
+                                  className={`font-semibold ${theme.primary} text-sm`}
+                                >
+                                  {exp.position}
+                                </h3>
+                                <div
+                                  className={`${theme.secondary} text-xs font-medium mt-1`}
+                                >
+                                  {exp.company}
+                                  {exp.location && `, ${exp.location}`}
+                                </div>
+                              </div>
+                              <div
+                                className={`${theme.secondary} text-xs mt-1 bg-gray-100 px-2 py-1 rounded`}
                               >
-                                {tech}
-                              </span>
-                            ))}
+                                {formatDate(exp.startDate)} -{" "}
+                                {exp.currentJob
+                                  ? "Present"
+                                  : formatDate(exp.endDate)}
+                              </div>
+                            </div>
+                            <p
+                              className={`text-xs ${theme.primary} mt-2 whitespace-pre-line leading-relaxed`}
+                            >
+                              {exp.description}
+                            </p>
                           </div>
-                        )}
-                      </div>
-                    ))}
+                        ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+
+              {/* Projects Section */}
+              {projects &&
+                projects.length > 0 &&
+                projects.some((project) => project.title) && (
+                  <div className="pdf-section" data-pdf-section="projects">
+                    <h2
+                      className={`text-base font-semibold ${theme.heading} mb-3 uppercase tracking-wider`}
+                    >
+                      Projects
+                    </h2>
+                    <div className="space-y-4">
+                      {projects
+                        .filter((project) => project.title)
+                        .map((project, index) => (
+                          <div
+                            key={index}
+                            className="mb-4 page-break-inside-avoid border-l-2 pl-4 border-gray-200"
+                          >
+                            <div className="flex justify-between items-start flex-wrap">
+                              <h3
+                                className={`font-semibold ${theme.primary} text-sm`}
+                              >
+                                {project.title}
+                              </h3>
+                              <div
+                                className={`${theme.secondary} text-xs bg-gray-100 px-2 py-1 rounded`}
+                              >
+                                {formatDate(project.startDate)} -{" "}
+                                {project.currentProject
+                                  ? "Present"
+                                  : formatDate(project.endDate)}
+                              </div>
+                            </div>
+                            <p
+                              className={`text-xs ${theme.primary} mt-2 leading-relaxed`}
+                            >
+                              {project.description}
+                            </p>
+                            {project.technologies &&
+                              project.technologies.length > 0 && (
+                                <div className="flex flex-wrap gap-1 mt-2">
+                                  {project.technologies.map(
+                                    (tech, techIndex) => (
+                                      <span
+                                        key={techIndex}
+                                        className={`inline-block text-xs bg-gray-100 px-2 py-0.5 rounded ${theme.secondary}`}
+                                      >
+                                        {tech}
+                                      </span>
+                                    )
+                                  )}
+                                </div>
+                              )}
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+
+              {/* Achievements Section */}
+              {achievements &&
+                achievements.length > 0 &&
+                achievements.some((achievement) => achievement.title) && (
+                  <div className="pdf-section" data-pdf-section="achievements">
+                    <h2
+                      className={`text-base font-semibold ${theme.heading} mb-3 uppercase tracking-wider flex items-center gap-1`}
+                    >
+                      <Trophy className="w-4 h-4" /> Key Achievements
+                    </h2>
+                    <div className="space-y-4">
+                      {achievements
+                        .filter((achievement) => achievement.title)
+                        .map((achievement, index) => (
+                          <div
+                            key={index}
+                            className="mb-4 page-break-inside-avoid border-l-2 pl-4 border-gray-200"
+                          >
+                            <div className="flex justify-between items-start flex-wrap">
+                              <div>
+                                <h3
+                                  className={`font-semibold ${theme.primary} text-sm`}
+                                >
+                                  {achievement.title}
+                                </h3>
+                                <div
+                                  className={`${theme.secondary} text-xs font-medium mt-1`}
+                                >
+                                  {achievement.organization}
+                                </div>
+                              </div>
+                              <div
+                                className={`${theme.secondary} text-xs bg-gray-100 px-2 py-1 rounded`}
+                              >
+                                {formatDate(achievement.date)}
+                              </div>
+                            </div>
+                            {achievement.description && (
+                              <p
+                                className={`text-xs ${theme.primary} mt-2 leading-relaxed`}
+                              >
+                                {achievement.description}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
             </div>
           </div>
         </CardContent>

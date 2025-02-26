@@ -6,6 +6,8 @@ import Experience from "@/components/experience";
 import Education from "@/components/education";
 import Skills from "@/components/skills";
 import Projects from "@/components/projects";
+import Certifications from "@/components/certifications";
+import Achievements from "@/components/achievements";
 import ComprehensivePreview from "@/components/resume-preview/ComprehensivePreview";
 import { Button } from "@/components/ui/button";
 import { useResumeStore } from "./store/useResumeStore";
@@ -30,9 +32,17 @@ import {
   FolderKanban,
   Download,
   Upload,
+  Award,
+  Trophy,
+  PlusCircle,
 } from "lucide-react";
 import ErrorBoundary from "@/components/error-boundary";
 import { saveAs } from "file-saver";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("personalInfo");
@@ -40,6 +50,8 @@ export default function Home() {
 
   // Get data and methods from the store
   const resumeData = useResumeStore((state) => state.resumeData);
+  const activeSections = useResumeStore((state) => state.activeSections);
+  const toggleSection = useResumeStore((state) => state.toggleSection);
   const updatePersonalInfo = useResumeStore(
     (state) => state.updatePersonalInfo
   );
@@ -47,36 +59,69 @@ export default function Home() {
   const updateEducation = useResumeStore((state) => state.updateEducation);
   const updateSkills = useResumeStore((state) => state.updateSkills);
   const updateProjects = useResumeStore((state) => state.updateProjects);
+  const updateCertificates = useResumeStore(
+    (state) => state.updateCertificates
+  );
+  const updateAchievements = useResumeStore(
+    (state) => state.updateAchievements
+  );
   const resetStore = useResumeStore((state) => state.resetStore);
 
-  // Define fixed tab sections
-  const tabSections = [
+  // Define all available section data
+  const allSections = [
     {
       id: "personalInfo",
       icon: <UserRound className="h-4 w-4 mr-2" />,
       label: "Personal Info",
+      required: true,
     },
     {
       id: "experiences",
       icon: <Briefcase className="h-4 w-4 mr-2" />,
       label: "Experience",
+      required: true,
     },
     {
       id: "education",
       icon: <GraduationCap className="h-4 w-4 mr-2" />,
       label: "Education",
+      required: true,
     },
     {
       id: "skills",
       icon: <Lightbulb className="h-4 w-4 mr-2" />,
       label: "Skills",
+      required: true,
     },
     {
       id: "projects",
       icon: <FolderKanban className="h-4 w-4 mr-2" />,
       label: "Projects",
+      required: false,
+    },
+    {
+      id: "certificates",
+      icon: <Award className="h-4 w-4 mr-2" />,
+      label: "Certifications",
+      required: false,
+    },
+    {
+      id: "achievements",
+      icon: <Trophy className="h-4 w-4 mr-2" />,
+      label: "Achievements",
+      required: false,
     },
   ];
+
+  // Get active section data
+  const activeSectionData = allSections.filter((section) =>
+    activeSections.includes(section.id)
+  );
+
+  // Get optional sections that can be added
+  const optionalSections = allSections.filter(
+    (section) => !section.required && !activeSections.includes(section.id)
+  );
 
   const togglePreview = () => {
     setShowPreview(!showPreview);
@@ -84,24 +129,65 @@ export default function Home() {
 
   // Find the next active section
   const findNextSection = (currentSection: string) => {
-    const currentIndex = tabSections.findIndex(
-      (section) => section.id === currentSection
-    );
-    if (currentIndex !== -1 && currentIndex < tabSections.length - 1) {
-      return tabSections[currentIndex + 1].id;
+    const currentIndex = activeSections.indexOf(currentSection);
+    if (currentIndex !== -1 && currentIndex < activeSections.length - 1) {
+      return activeSections[currentIndex + 1];
     }
     return null;
   };
 
   // Find the previous active section
   const findPrevSection = (currentSection: string) => {
-    const currentIndex = tabSections.findIndex(
-      (section) => section.id === currentSection
-    );
+    const currentIndex = activeSections.indexOf(currentSection);
     if (currentIndex > 0) {
-      return tabSections[currentIndex - 1].id;
+      return activeSections[currentIndex - 1];
     }
     return null;
+  };
+
+  // Handle adding a new section
+  const handleAddSection = (sectionId: string) => {
+    toggleSection(sectionId, true);
+
+    // Initialize empty data for the new section
+    switch (sectionId) {
+      case "projects":
+        updateProjects([
+          {
+            title: "",
+            description: "",
+            technologies: [],
+            startDate: "",
+            endDate: "",
+          },
+        ]);
+        break;
+      case "certificates":
+        updateCertificates([
+          {
+            name: "",
+            issuer: "",
+            date: "",
+            expiration: "",
+            credentialId: "",
+            link: "",
+          },
+        ]);
+        break;
+      case "achievements":
+        updateAchievements([
+          {
+            title: "",
+            organization: "",
+            date: "",
+            description: "",
+          },
+        ]);
+        break;
+    }
+
+    // Switch to the new section
+    setActiveTab(sectionId);
   };
 
   // Export and import functionality
@@ -127,8 +213,20 @@ export default function Home() {
         updateExperiences(data.experiences);
         updateEducation(data.education);
         updateSkills(data.skillGroups);
-        // Update optional sections as needed
-        if (data.projects) updateProjects(data.projects);
+
+        // Update optional sections if they exist in the imported data
+        if (data.projects) {
+          updateProjects(data.projects);
+          toggleSection("projects", true);
+        }
+        if (data.certificates) {
+          updateCertificates(data.certificates);
+          toggleSection("certificates", true);
+        }
+        if (data.achievements) {
+          updateAchievements(data.achievements);
+          toggleSection("achievements", true);
+        }
       } catch (error) {
         console.error("Error importing data:", error);
       }
@@ -156,8 +254,7 @@ export default function Home() {
 
   // Check if current tab is the last one
   const isLastTab =
-    tabSections.findIndex((section) => section.id === activeTab) ===
-    tabSections.length - 1;
+    activeSections.indexOf(activeTab) === activeSections.length - 1;
 
   return (
     <div className="container mx-auto p-6">
@@ -220,70 +317,167 @@ export default function Home() {
           <ComprehensivePreview data={resumeData} />
         ) : (
           <div className="space-y-6">
-            <Tabs
-              value={activeTab}
-              onValueChange={setActiveTab}
-              className="w-full"
-            >
-              <TabsList className="flex flex-wrap mb-6 h-auto">
-                {tabSections.map((section) => (
-                  <TabsTrigger
-                    key={section.id}
-                    value={section.id}
-                    className="flex items-center"
-                  >
-                    {section.icon}
-                    {section.label}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
+            <div className="flex justify-between items-center">
+              <Tabs
+                value={activeTab}
+                onValueChange={setActiveTab}
+                className="w-full"
+              >
+                <TabsList className="flex flex-wrap mb-6 h-auto">
+                  {activeSectionData.map((section) => (
+                    <TabsTrigger
+                      key={section.id}
+                      value={section.id}
+                      className="flex items-center"
+                    >
+                      {section.icon}
+                      {section.label}
+                    </TabsTrigger>
+                  ))}
 
-              {/* Required Sections */}
-              <TabsContent value="personalInfo">
-                <PersonalInfo
-                  onSubmit={updatePersonalInfo}
-                  defaultValues={resumeData.personalInfo}
-                />
-              </TabsContent>
+                  {/* Add Section Button */}
+                  {optionalSections.length > 0 && (
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" size="sm" className="ml-2">
+                          <PlusCircle className="h-4 w-4 mr-2" />
+                          Add Section
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-56">
+                        <div className="space-y-2">
+                          {optionalSections.map((section) => (
+                            <div
+                              key={section.id}
+                              className="flex items-center py-1 cursor-pointer hover:bg-muted px-2 rounded"
+                              onClick={() => handleAddSection(section.id)}
+                            >
+                              {section.icon}
+                              <span>{section.label}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  )}
+                </TabsList>
 
-              <TabsContent value="experiences">
-                <Experience
-                  onSubmit={({ experiences }) => updateExperiences(experiences)}
-                  defaultValues={{ experiences: resumeData.experiences }}
-                />
-              </TabsContent>
+                {/* Section Content */}
+                <TabsContent value="personalInfo">
+                  <PersonalInfo
+                    onSubmit={updatePersonalInfo}
+                    defaultValues={resumeData.personalInfo}
+                  />
+                </TabsContent>
 
-              <TabsContent value="education">
-                <Education
-                  onSubmit={({ education }) => updateEducation(education)}
-                  defaultValues={{ education: resumeData.education }}
-                />
-              </TabsContent>
+                <TabsContent value="experiences">
+                  <Experience
+                    onSubmit={({ experiences }) =>
+                      updateExperiences(experiences)
+                    }
+                    defaultValues={{ experiences: resumeData.experiences }}
+                  />
+                </TabsContent>
 
-              <TabsContent value="skills">
-                <Skills
-                  onSubmit={({ skillGroups }) => updateSkills(skillGroups)}
-                  defaultValues={{ skillGroups: resumeData.skillGroups }}
-                />
-              </TabsContent>
+                <TabsContent value="education">
+                  <Education
+                    onSubmit={({ education }) => updateEducation(education)}
+                    defaultValues={{ education: resumeData.education }}
+                  />
+                </TabsContent>
 
-              <TabsContent value="projects">
-                <Projects
-                  onSubmit={({ projects }) => updateProjects(projects)}
-                  defaultValues={{ projects: resumeData.projects || [] }}
-                />
-              </TabsContent>
-            </Tabs>
+                <TabsContent value="skills">
+                  <Skills
+                    onSubmit={({ skillGroups }) => updateSkills(skillGroups)}
+                    defaultValues={{ skillGroups: resumeData.skillGroups }}
+                  />
+                </TabsContent>
+
+                {/* Optional Sections - only render if active */}
+                {activeSections.includes("projects") && (
+                  <TabsContent value="projects">
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-2xl font-bold">Projects</h2>
+                      {!allSections.find((s) => s.id === "projects")
+                        ?.required && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => toggleSection("projects", false)}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          Remove Section
+                        </Button>
+                      )}
+                    </div>
+                    <Projects
+                      onSubmit={({ projects }) => updateProjects(projects)}
+                      defaultValues={{ projects: resumeData.projects || [] }}
+                    />
+                  </TabsContent>
+                )}
+
+                {activeSections.includes("certificates") && (
+                  <TabsContent value="certificates">
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-2xl font-bold">Certifications</h2>
+                      {!allSections.find((s) => s.id === "certificates")
+                        ?.required && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => toggleSection("certificates", false)}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          Remove Section
+                        </Button>
+                      )}
+                    </div>
+                    <Certifications
+                      onSubmit={({ certificates }) =>
+                        updateCertificates(certificates)
+                      }
+                      defaultValues={{
+                        certificates: resumeData.certificates || [],
+                      }}
+                    />
+                  </TabsContent>
+                )}
+
+                {activeSections.includes("achievements") && (
+                  <TabsContent value="achievements">
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-2xl font-bold">Key Achievements</h2>
+                      {!allSections.find((s) => s.id === "achievements")
+                        ?.required && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => toggleSection("achievements", false)}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          Remove Section
+                        </Button>
+                      )}
+                    </div>
+                    <Achievements
+                      onSubmit={({ achievements }) =>
+                        updateAchievements(achievements)
+                      }
+                      defaultValues={{
+                        achievements: resumeData.achievements || [],
+                      }}
+                    />
+                  </TabsContent>
+                )}
+              </Tabs>
+            </div>
 
             <div className="mt-6 flex justify-between">
               <Button
                 variant="outline"
                 onClick={handlePrevious}
-                disabled={
-                  tabSections.findIndex(
-                    (section) => section.id === activeTab
-                  ) === 0
-                }
+                disabled={activeSections.indexOf(activeTab) === 0}
               >
                 Previous
               </Button>

@@ -87,6 +87,14 @@ export interface Certificate {
   credentialId?: string;
 }
 
+
+export interface Achievement {
+  title: string;
+  organization: string;
+  date: string;
+  description?: string;
+}
+
 export interface Language {
   name: string;
   proficiency: "Native" | "Fluent" | "Proficient" | "Intermediate" | "Basic";
@@ -131,15 +139,16 @@ export interface Volunteer {
 
 // Resume data with required and optional sections
 export interface ResumeData {
-  // Required sections
+  // Required sections (always present)
   personalInfo: PersonalInfo;
   experiences: Experience[];
   education: Education[];
   skillGroups: SkillGroup[];
 
-  // Optional sections
+  // Optional sections (only show if user adds them)
   projects?: Project[];
   certificates?: Certificate[];
+  achievements?: Achievement[];
   languages?: Language[];
   interests?: Interest[];
   references?: Reference[];
