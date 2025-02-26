@@ -1,4 +1,3 @@
-// src/components/resume-preview/utils/react-pdf-export.tsx
 import React from "react";
 import {
   pdf,
@@ -12,146 +11,157 @@ import {
 } from "@react-pdf/renderer";
 import type { ResumeData } from "@/types/resume";
 import { saveAs } from "file-saver";
-//import { ThemeKey } from "../theme-config";
 
-// Register fonts for better typography
+// Enhanced typography with premium fonts
 Font.register({
-  family: "Open Sans",
+  family: "Montserrat",
   fonts: [
     {
-      src: "https://cdn.jsdelivr.net/npm/open-sans-all@0.1.3/fonts/open-sans-regular.ttf",
+      src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Montserrat/montserrat-regular-webfont.ttf",
       fontWeight: "normal",
     },
     {
-      src: "https://cdn.jsdelivr.net/npm/open-sans-all@0.1.3/fonts/open-sans-600.ttf",
-      fontWeight: "semibold",
-    },
-    {
-      src: "https://cdn.jsdelivr.net/npm/open-sans-all@0.1.3/fonts/open-sans-700.ttf",
-      fontWeight: "bold",
-    },
-  ],
-});
-
-Font.register({
-  family: "Roboto",
-  fonts: [
-    {
-      src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-regular-webfont.ttf",
-      fontWeight: "normal",
-    },
-    {
-      src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-medium-webfont.ttf",
+      src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Montserrat/montserrat-medium-webfont.ttf",
       fontWeight: "medium",
     },
     {
-      src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-bold-webfont.ttf",
+      src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Montserrat/montserrat-semibold-webfont.ttf",
+      fontWeight: "semibold",
+    },
+    {
+      src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Montserrat/montserrat-bold-webfont.ttf",
       fontWeight: "bold",
     },
   ],
 });
 
 Font.register({
-  family: "Lato",
+  family: "Merriweather",
   fonts: [
     {
-      src: "https://fonts.gstatic.com/s/lato/v16/S6uyw4BMUTPHjx4wWw.ttf",
+      src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Merriweather/merriweather-regular-webfont.ttf",
       fontWeight: "normal",
     },
     {
-      src: "https://fonts.gstatic.com/s/lato/v16/S6u9w4BMUTPHh6UVSwiPHA.ttf",
+      src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Merriweather/merriweather-bold-webfont.ttf",
       fontWeight: "bold",
     },
   ],
 });
 
 Font.register({
-  family: "Playfair Display",
-  src: "https://fonts.gstatic.com/s/playfairdisplay/v21/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKdFvXDXbtY.ttf",
-  fontWeight: "normal",
+  family: "Source Sans Pro",
+  fonts: [
+    {
+      src: "https://cdn.jsdelivr.net/npm/source-sans-pro@3.6.0/TTF/SourceSansPro-Regular.ttf",
+      fontWeight: "normal",
+    },
+    {
+      src: "https://cdn.jsdelivr.net/npm/source-sans-pro@3.6.0/TTF/SourceSansPro-Semibold.ttf",
+      fontWeight: "semibold",
+    },
+    {
+      src: "https://cdn.jsdelivr.net/npm/source-sans-pro@3.6.0/TTF/SourceSansPro-Bold.ttf",
+      fontWeight: "bold",
+    },
+  ],
 });
 
-// Define theme-specific styles
+// Refined theme configurations with more elegant color palettes
 const themeStyles = {
-  classic: {
-    fontFamily: "Open Sans",
-    primary: "#111111",
-    secondary: "#555555",
-    accent: "#F6F6F6",
-    border: "#EEEEEE",
-    link: "#0066CC",
-    headingWeight: "bold",
+  executive: {
+    primaryFont: "Montserrat",
+    secondaryFont: "Source Sans Pro",
+    primary: "#2C3E50",
+    secondary: "#34495E",
+    accent: "#F7F9FA",
+    border: "#E5E8ED",
+    link: "#3498DB",
+    headingWeight: "semibold",
     sectionBg: "#FFFFFF",
-    skillBg: "#F6F6F6",
-    skillText: "#444444",
-  },
-  modern: {
-    fontFamily: "Roboto",
-    primary: "#2D3748",
-    secondary: "#4A5568",
-    accent: "#EDF2F7",
-    border: "#E2E8F0",
-    link: "#3182CE",
-    headingWeight: "medium",
-    sectionBg: "#FFFFFF",
-    skillBg: "#EDF2F7",
-    skillText: "#4A5568",
+    skillBg: "#F7F9FA",
+    skillText: "#34495E",
+    headerBg: "#FFFFFF",
   },
   professional: {
-    fontFamily: "Roboto",
-    primary: "#333333",
-    secondary: "#666666",
+    primaryFont: "Source Sans Pro",
+    secondaryFont: "Source Sans Pro",
+    primary: "#1A2A3A",
+    secondary: "#4A6072",
     accent: "#F0F4F8",
     border: "#D1DCE8",
     link: "#2E5C8A",
-    headingWeight: "bold",
+    headingWeight: "semibold",
     sectionBg: "#FFFFFF",
     skillBg: "#F0F4F8",
-    skillText: "#2E5C8A",
+    skillText: "#4A6072",
+    headerBg: "#FFFFFF",
+  },
+  sophisticated: {
+    primaryFont: "Merriweather",
+    secondaryFont: "Source Sans Pro",
+    primary: "#2F3542",
+    secondary: "#57606F",
+    accent: "#F1F2F6",
+    border: "#DFE4EA",
+    link: "#546DE5",
+    headingWeight: "normal",
+    sectionBg: "#FFFFFF",
+    skillBg: "#F1F2F6",
+    skillText: "#57606F",
+    headerBg: "#FFFFFF",
   },
   minimalist: {
-    fontFamily: "Lato",
-    primary: "#222222",
-    secondary: "#555555",
+    primaryFont: "Montserrat",
+    secondaryFont: "Source Sans Pro",
+    primary: "#232323",
+    secondary: "#666666",
     accent: "#F8F8F8",
     border: "#EEEEEE",
-    link: "#777777",
-    headingWeight: "normal",
+    link: "#666666",
+    headingWeight: "medium",
     sectionBg: "#FFFFFF",
     skillBg: "#F8F8F8",
-    skillText: "#555555",
+    skillText: "#666666",
+    headerBg: "#FFFFFF",
   },
-  creative: {
-    fontFamily: "Playfair Display",
-    primary: "#1F1F1F",
-    secondary: "#5F5F5F",
-    accent: "#FFF3E0",
-    border: "#FFE0B2",
-    link: "#FF8F00",
+  elegant: {
+    primaryFont: "Merriweather",
+    secondaryFont: "Montserrat",
+    primary: "#2C3A47",
+    secondary: "#556170",
+    accent: "#F7F7F7",
+    border: "#E8E8E8",
+    link: "#3B6978",
     headingWeight: "normal",
     sectionBg: "#FFFFFF",
-    skillBg: "#FFF3E0",
-    skillText: "#5F5F5F",
+    skillBg: "#F7F7F7",
+    skillText: "#556170",
+    headerBg: "#FFFFFF",
   },
 };
 
-// Create style generator function
-const createStyles = (theme: keyof typeof themeStyles = "classic") => {
-  const themeConfig = themeStyles[theme] || themeStyles.classic;
+// Create style generator function with enhanced design principles
+const createStyles = (theme: keyof typeof themeStyles = "professional") => {
+  const themeConfig = themeStyles[theme] || themeStyles.professional;
 
   return StyleSheet.create({
     page: {
       flexDirection: "column",
       backgroundColor: "#FFFFFF",
-      padding: 30,
-      fontFamily: themeConfig.fontFamily,
+      padding: 35,
+      fontFamily: themeConfig.secondaryFont,
     },
     header: {
+      flexDirection: "column",
+      marginBottom: 25,
+      padding: 0,
+      backgroundColor: themeConfig.headerBg,
+    },
+    headerTop: {
       flexDirection: "row",
       justifyContent: "space-between",
-      marginBottom: 20,
-      paddingBottom: 10,
-      borderBottom: `1px solid ${themeConfig.border}`,
+      marginBottom: 12,
     },
     headerLeft: {
       flexDirection: "column",
@@ -163,41 +173,55 @@ const createStyles = (theme: keyof typeof themeStyles = "classic") => {
       alignItems: "flex-end",
     },
     name: {
-      fontSize: 24,
+      fontSize: 26,
+      fontFamily: themeConfig.primaryFont,
       fontWeight: themeConfig.headingWeight,
-      marginBottom: 4,
+      marginBottom: 5,
       color: themeConfig.primary,
+      letterSpacing: 0.5,
     },
     title: {
       fontSize: 14,
       color: themeConfig.secondary,
-      marginBottom: 4,
+      marginBottom: 5,
+      fontFamily: themeConfig.secondaryFont,
+      letterSpacing: 0.2,
+    },
+    contact: {
+      flexDirection: "column",
+      alignItems: "flex-end",
     },
     contactItem: {
       fontSize: 10,
-      marginBottom: 2,
+      marginBottom: 3,
       color: themeConfig.secondary,
+      textAlign: "right",
     },
     link: {
       fontSize: 10,
       color: themeConfig.link,
       textDecoration: "none",
-      marginBottom: 2,
+      marginBottom: 3,
+      textAlign: "right",
+    },
+    summarySection: {
+      marginTop: 5,
+      marginBottom: 5,
+      paddingTop: 10,
+      paddingBottom: 15,
+      borderTop: `1px solid ${themeConfig.border}`,
+      borderBottom: `1px solid ${themeConfig.border}`,
     },
     summary: {
-      fontSize: 10,
-      marginBottom: 15,
-      lineHeight: 1.4,
+      fontSize: 10.5,
+      lineHeight: 1.5,
       color: themeConfig.secondary,
-    },
-    divider: {
-      borderBottom: `1px solid ${themeConfig.border}`,
-      marginTop: 5,
-      marginBottom: 10,
+      textAlign: "justify",
     },
     socialLinks: {
       flexDirection: "row",
       marginTop: 5,
+      justifyContent: "flex-end",
     },
     socialLink: {
       fontSize: 9,
@@ -207,7 +231,7 @@ const createStyles = (theme: keyof typeof themeStyles = "classic") => {
     },
     contentContainer: {
       flexDirection: "row",
-      marginTop: 10,
+      marginTop: 0,
     },
     leftColumn: {
       width: "32%",
@@ -217,30 +241,114 @@ const createStyles = (theme: keyof typeof themeStyles = "classic") => {
       width: "68%",
     },
     sectionTitle: {
-      fontSize: 12,
+      fontSize: 13,
+      fontFamily: themeConfig.primaryFont,
       fontWeight: themeConfig.headingWeight,
-      marginBottom: 8,
+      marginBottom: 10,
       color: themeConfig.primary,
       textTransform: "uppercase",
+      letterSpacing: 1,
+      paddingBottom: 2,
+      borderBottom: `1px solid ${themeConfig.border}`,
     },
     sectionContent: {
-      marginBottom: 15,
+      marginBottom: 20,
     },
     categoryTitle: {
       fontSize: 11,
-      fontWeight:
-        themeConfig.headingWeight === "bold"
-          ? "semibold"
-          : themeConfig.headingWeight,
-      marginBottom: 4,
+      fontWeight: "semibold",
+      marginBottom: 6,
       color: themeConfig.primary,
+      fontFamily: themeConfig.primaryFont,
     },
     skillContainer: {
       flexDirection: "row",
       flexWrap: "wrap",
-      marginBottom: 10,
+      marginBottom: 12,
     },
     skillItem: {
+      fontSize: 9,
+      backgroundColor: themeConfig.skillBg,
+      padding: "4 7",
+      marginRight: 6,
+      marginBottom: 6,
+      borderRadius: 3,
+      color: themeConfig.skillText,
+    },
+    experienceItem: {
+      marginBottom: 15,
+    },
+    experienceHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: 4,
+      alignItems: "center",
+    },
+    positionTitle: {
+      fontSize: 12,
+      fontWeight: "semibold",
+      color: themeConfig.primary,
+      fontFamily: themeConfig.primaryFont,
+    },
+    company: {
+      fontSize: 11,
+      color: themeConfig.secondary,
+      marginBottom: 3,
+      fontWeight: "medium",
+    },
+    dateRange: {
+      fontSize: 9,
+      color: themeConfig.secondary,
+    },
+    description: {
+      fontSize: 9.5,
+      lineHeight: 1.6,
+      marginTop: 4,
+      color: themeConfig.secondary,
+      textAlign: "justify",
+    },
+    bulletPoint: {
+      flexDirection: "row",
+      marginBottom: 2,
+      paddingLeft: 2,
+    },
+    bullet: {
+      fontSize: 9,
+      marginRight: 4,
+      color: themeConfig.secondary,
+    },
+    bulletText: {
+      fontSize: 9.5,
+      lineHeight: 1.5,
+      color: themeConfig.secondary,
+      flex: 1,
+    },
+    educationItem: {
+      marginBottom: 12,
+    },
+    degree: {
+      fontSize: 11,
+      fontWeight: "semibold",
+      color: themeConfig.primary,
+      fontFamily: themeConfig.primaryFont,
+      marginBottom: 2,
+    },
+    institution: {
+      fontSize: 10,
+      color: themeConfig.secondary,
+      marginBottom: 2,
+    },
+    gpa: {
+      fontSize: 9,
+      color: themeConfig.secondary,
+      marginTop: 2,
+    },
+    toolsList: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      marginBottom: 8,
+    },
+    toolItem: {
       fontSize: 9,
       backgroundColor: themeConfig.skillBg,
       padding: "3 6",
@@ -249,77 +357,39 @@ const createStyles = (theme: keyof typeof themeStyles = "classic") => {
       borderRadius: 3,
       color: themeConfig.skillText,
     },
-    experienceItem: {
-      marginBottom: 12,
-    },
-    experienceHeader: {
+    languageItem: {
       flexDirection: "row",
       justifyContent: "space-between",
-      marginBottom: 3,
-    },
-    positionTitle: {
-      fontSize: 11,
-      fontWeight:
-        themeConfig.headingWeight === "bold"
-          ? "semibold"
-          : themeConfig.headingWeight,
-      color: themeConfig.primary,
-    },
-    company: {
-      fontSize: 10,
-      color: themeConfig.secondary,
-      marginBottom: 2,
-    },
-    dateRange: {
-      fontSize: 9,
+      fontSize: 9.5,
+      marginBottom: 4,
       color: themeConfig.secondary,
     },
-    description: {
-      fontSize: 9,
-      lineHeight: 1.5,
-      marginTop: 3,
-      color: themeConfig.secondary,
+    divider: {
+      borderBottom: `1px solid ${themeConfig.border}`,
+      marginTop: 5,
+      marginBottom: 5,
     },
-    educationItem: {
-      marginBottom: 10,
-    },
-    degree: {
-      fontSize: 10,
-      fontWeight:
-        themeConfig.headingWeight === "bold"
-          ? "semibold"
-          : themeConfig.headingWeight,
-      color: themeConfig.primary,
-    },
-    institution: {
-      fontSize: 9,
-      color: themeConfig.secondary,
-      marginBottom: 1,
-    },
-    toolsList: {
+    projectTechnologies: {
       flexDirection: "row",
       flexWrap: "wrap",
-      marginBottom: 5,
+      marginTop: 6,
     },
-    toolItem: {
-      fontSize: 9,
-      backgroundColor: themeConfig.skillBg,
-      padding: "2 5",
-      marginRight: 5,
-      marginBottom: 5,
-      borderRadius: 3,
-      color: themeConfig.skillText,
-    },
-    languageItem: {
-      fontSize: 9,
-      marginBottom: 3,
+    footer: {
+      position: "absolute",
+      bottom: 30,
+      left: 35,
+      right: 35,
+      fontSize: 8,
       color: themeConfig.secondary,
+      textAlign: "center",
+      borderTop: `0.5px solid ${themeConfig.border}`,
+      paddingTop: 8,
     },
   });
 };
 
-// Format date function
-const formatDate = (dateString: string) => {
+// Format date function with enhanced formatting
+const formatDate = (dateString: string): string => {
   if (!dateString) return "";
 
   const date = new Date(dateString);
@@ -329,10 +399,10 @@ const formatDate = (dateString: string) => {
   });
 };
 
-// Create Resume PDF Document with theme support
+// Create Resume PDF Document with enhanced layout and design
 const ResumePDF = ({
   data,
-  theme = "classic",
+  theme = "professional",
 }: {
   data: ResumeData;
   theme?: keyof typeof themeStyles;
@@ -342,54 +412,98 @@ const ResumePDF = ({
   // Generate theme-specific styles
   const styles = createStyles(theme);
 
+  // Create bullet points from description text
+  const createBulletPoints = (description: string): string[] => {
+    if (!description) return [];
+
+    // If description contains bullet points already (• or - at beginning of lines)
+    if (description.includes("\n•") || description.includes("\n-")) {
+      return description
+        .split("\n")
+        .filter((line) => line.trim().length > 0)
+        .map((line) => line.trim().replace(/^[•\-]\s*/, ""));
+    }
+
+    // Otherwise, split by periods and filter out empty lines
+    return description
+      .split(".")
+      .filter((line) => line.trim().length > 0)
+      .map((line) => line.trim());
+  };
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Header Section */}
+        {/* Enhanced Header Section */}
         <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <Text style={styles.name}>{personalInfo.fullName}</Text>
-            <Text style={styles.title}>{personalInfo.title}</Text>
+          <View style={styles.headerTop}>
+            <View style={styles.headerLeft}>
+              <Text style={styles.name}>{personalInfo.fullName}</Text>
+              <Text style={styles.title}>{personalInfo.title}</Text>
+            </View>
 
-            {/* Summary */}
-            {personalInfo.summary && (
-              <Text style={styles.summary}>{personalInfo.summary}</Text>
-            )}
-          </View>
+            <View style={styles.headerRight}>
+              <View style={styles.contact}>
+                <Link src={`mailto:${personalInfo.email}`} style={styles.link}>
+                  {personalInfo.email}
+                </Link>
+                <Text style={styles.contactItem}>{personalInfo.phone}</Text>
+                <Text style={styles.contactItem}>{personalInfo.location}</Text>
+              </View>
 
-          <View style={styles.headerRight}>
-            <Link src={`mailto:${personalInfo.email}`} style={styles.link}>
-              {personalInfo.email}
-            </Link>
-            <Text style={styles.contactItem}>{personalInfo.phone}</Text>
-            <Text style={styles.contactItem}>{personalInfo.location}</Text>
-
-            {/* Social Links */}
-            <View style={styles.socialLinks}>
-              {personalInfo.linkedin && (
-                <Link src={personalInfo.linkedin} style={styles.socialLink}>
-                  LinkedIn
-                </Link>
-              )}
-              {personalInfo.github && (
-                <Link src={personalInfo.github} style={styles.socialLink}>
-                  GitHub
-                </Link>
-              )}
-              {personalInfo.portfolio && (
-                <Link src={personalInfo.portfolio} style={styles.socialLink}>
-                  Portfolio
-                </Link>
-              )}
+              {/* Social Links */}
+              <View style={styles.socialLinks}>
+                {personalInfo.linkedin && (
+                  <Link src={personalInfo.linkedin} style={styles.socialLink}>
+                    LinkedIn
+                  </Link>
+                )}
+                {personalInfo.github && (
+                  <Link src={personalInfo.github} style={styles.socialLink}>
+                    GitHub
+                  </Link>
+                )}
+                {personalInfo.portfolio && (
+                  <Link src={personalInfo.portfolio} style={styles.socialLink}>
+                    Portfolio
+                  </Link>
+                )}
+              </View>
             </View>
           </View>
+
+          {/* Summary Section with borders */}
+          {personalInfo.summary && (
+            <View style={styles.summarySection}>
+              <Text style={styles.summary}>{personalInfo.summary}</Text>
+            </View>
+          )}
         </View>
 
-        {/* Main Content */}
+        {/* Main Content with Improved Layout */}
         <View style={styles.contentContainer}>
           {/* Left Column */}
           <View style={styles.leftColumn}>
-            {/* Skills Section */}
+            {/* Education Section - Moved to top for professional focus */}
+            <View style={styles.sectionContent}>
+              <Text style={styles.sectionTitle}>Education</Text>
+
+              {education.map((edu, index) => (
+                <View key={`education-${index}`} style={styles.educationItem}>
+                  <Text style={styles.degree}>
+                    {edu.degree} {edu.field && `in ${edu.field}`}
+                  </Text>
+                  <Text style={styles.institution}>{edu.institution}</Text>
+                  <Text style={styles.dateRange}>
+                    {formatDate(edu.startDate)} -{" "}
+                    {edu.endDate ? formatDate(edu.endDate) : "Present"}
+                  </Text>
+                  {edu.gpa && <Text style={styles.gpa}>GPA: {edu.gpa}</Text>}
+                </View>
+              ))}
+            </View>
+
+            {/* Skills Section with Improved Categorization */}
             <View style={styles.sectionContent}>
               <Text style={styles.sectionTitle}>Skills</Text>
 
@@ -413,46 +527,46 @@ const ResumePDF = ({
               ))}
             </View>
 
-            {/* Languages Section */}
+            {/* Languages Section with Visual Improvement */}
             {data.languages && data.languages.length > 0 && (
               <View style={styles.sectionContent}>
                 <Text style={styles.sectionTitle}>Languages</Text>
 
                 <View style={{ marginBottom: 10 }}>
                   {data.languages.map((language, index) => (
-                    <Text key={`language-${index}`} style={styles.languageItem}>
-                      {language.name} • {language.proficiency}
-                    </Text>
+                    <View key={`language-${index}`} style={styles.languageItem}>
+                      <Text>{language.name}</Text>
+                      <Text>{language.proficiency}</Text>
+                    </View>
                   ))}
                 </View>
               </View>
             )}
 
-            {/* Tools Section - Transformed from skills */}
+            {/* Tools Section with Better Visualization */}
             <View style={styles.sectionContent}>
-              <Text style={styles.sectionTitle}>Tools</Text>
+              <Text style={styles.sectionTitle}>Technologies</Text>
 
+              <Text style={styles.categoryTitle}>Tools</Text>
               <View style={styles.toolsList}>
                 {[
                   "Git",
                   "GitHub",
                   "Docker",
-                  "Linux Operating System",
-                  "Windows Operating System",
+                  "Linux",
+                  "Windows",
+                  "AWS",
+                  "Azure",
                 ].map((tool, index) => (
                   <Text key={`tool-${index}`} style={styles.toolItem}>
                     {tool}
                   </Text>
                 ))}
               </View>
-            </View>
 
-            {/* Frameworks Section */}
-            <View style={styles.sectionContent}>
-              <Text style={styles.sectionTitle}>Frameworks</Text>
-
+              <Text style={styles.categoryTitle}>Frameworks</Text>
               <View style={styles.toolsList}>
-                {["React", "Angular", "Node", ".NET"].map(
+                {["React", "Angular", "Node.js", ".NET", "Spring Boot"].map(
                   (framework, index) => (
                     <Text key={`framework-${index}`} style={styles.toolItem}>
                       {framework}
@@ -462,37 +576,25 @@ const ResumePDF = ({
               </View>
             </View>
 
-            {/* Other Section */}
+            {/* Other Section - Interests or Certifications */}
             <View style={styles.sectionContent}>
-              <Text style={styles.sectionTitle}>Other</Text>
+              <Text style={styles.sectionTitle}>Certifications</Text>
 
               <View style={styles.toolsList}>
-                <Text style={styles.toolItem}>Reading Books</Text>
+                <Text style={styles.toolItem}>
+                  AWS Certified Solutions Architect
+                </Text>
+                <Text style={styles.toolItem}>
+                  Microsoft Certified: Azure Developer
+                </Text>
+                <Text style={styles.toolItem}>Scrum Master</Text>
               </View>
-            </View>
-
-            {/* Education Section */}
-            <View style={styles.sectionContent}>
-              <Text style={styles.sectionTitle}>Education</Text>
-
-              {education.map((edu, index) => (
-                <View key={`education-${index}`} style={styles.educationItem}>
-                  <Text style={styles.degree}>
-                    {edu.degree} in {edu.field}
-                  </Text>
-                  <Text style={styles.institution}>{edu.institution}</Text>
-                  <Text style={styles.dateRange}>
-                    {formatDate(edu.startDate)} -{" "}
-                    {edu.endDate ? formatDate(edu.endDate) : "Present"}
-                  </Text>
-                </View>
-              ))}
             </View>
           </View>
 
           {/* Right Column */}
           <View style={styles.rightColumn}>
-            {/* Experience Section */}
+            {/* Experience Section with Enhanced Formatting */}
             <View style={styles.sectionContent}>
               <Text style={styles.sectionTitle}>Professional Experience</Text>
 
@@ -509,13 +611,19 @@ const ResumePDF = ({
                     {exp.company}
                     {exp.location ? `, ${exp.location}` : ""}
                   </Text>
-                  <Text style={styles.description}>{exp.description}</Text>
+
+                  {/* Format description as bullet points for better readability */}
+                  {createBulletPoints(exp.description).map((point, i) => (
+                    <View key={`bullet-${i}`} style={styles.bulletPoint}>
+                      <Text style={styles.bullet}>•</Text>
+                      <Text style={styles.bulletText}>{point}</Text>
+                    </View>
+                  ))}
                 </View>
               ))}
             </View>
 
-            {/* Projects Section if available */}
-
+            {/* Projects Section with Enhanced Visualization */}
             {data.projects && data.projects.length > 0 && (
               <View style={styles.sectionContent}>
                 <Text style={styles.sectionTitle}>Projects</Text>
@@ -528,10 +636,14 @@ const ResumePDF = ({
                         {project.link && (
                           <Link src={project.link} style={styles.link}>
                             <Text
-                              style={{ fontSize: 8, color: styles.link.color }}
+                              style={{
+                                fontSize: 8,
+                                color: styles.link.color,
+                                marginLeft: 4,
+                              }}
                             >
                               {" "}
-                              [Link]
+                              [View Project]
                             </Text>
                           </Link>
                         )}
@@ -543,13 +655,21 @@ const ResumePDF = ({
                           : formatDate(project.endDate)}
                       </Text>
                     </View>
-                    <Text style={styles.description}>
-                      {project.description}
-                    </Text>
+
+                    {/* Format project description as bullet points */}
+                    {createBulletPoints(project.description).map((point, i) => (
+                      <View
+                        key={`project-bullet-${i}`}
+                        style={styles.bulletPoint}
+                      >
+                        <Text style={styles.bullet}>•</Text>
+                        <Text style={styles.bulletText}>{point}</Text>
+                      </View>
+                    ))}
 
                     {project.technologies &&
                       project.technologies.length > 0 && (
-                        <View style={[styles.skillContainer, { marginTop: 5 }]}>
+                        <View style={styles.projectTechnologies}>
                           {project.technologies.map((tech, techIndex) => (
                             <Text
                               key={`tech-${index}-${techIndex}`}
@@ -566,16 +686,24 @@ const ResumePDF = ({
             )}
           </View>
         </View>
+
+        {/* Footer with clean design */}
+        <View style={styles.footer}>
+          <Text>
+            {personalInfo.fullName} • Resume generated on{" "}
+            {new Date().toLocaleDateString()}
+          </Text>
+        </View>
       </Page>
     </Document>
   );
 };
 
-// Export Resume to PDF with theme support
+// Enhanced PDF export function with theme support
 export const exportResumeToPDF = async (
   data: ResumeData,
-  filename: string = "resume.pdf",
-  theme: keyof typeof themeStyles = "classic"
+  filename: string = "professional-resume.pdf",
+  theme: keyof typeof themeStyles = "professional"
 ) => {
   try {
     // Create the PDF document with the specified theme

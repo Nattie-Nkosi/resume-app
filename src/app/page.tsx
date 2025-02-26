@@ -6,7 +6,6 @@ import Experience from "@/components/experience";
 import Education from "@/components/education";
 import Skills from "@/components/skills";
 import Projects from "@/components/projects";
-import SectionManager from "@/components/section-manager";
 import ComprehensivePreview from "@/components/resume-preview/ComprehensivePreview";
 import { Button } from "@/components/ui/button";
 import { useResumeStore } from "./store/useResumeStore";
@@ -29,63 +28,11 @@ import {
   Lightbulb,
   Eye,
   FolderKanban,
-  Award,
-  Languages,
-  Heart,
-  Users,
-  BookOpen,
-  Trophy,
-  HeartHandshake,
-  PlusCircle,
   Download,
   Upload,
 } from "lucide-react";
 import ErrorBoundary from "@/components/error-boundary";
 import { saveAs } from "file-saver";
-
-// Map of section IDs to tab data (icon and label)
-const sectionTabData = {
-  personalInfo: {
-    icon: <UserRound className="h-4 w-4 mr-2" />,
-    label: "Personal Info",
-  },
-  experiences: {
-    icon: <Briefcase className="h-4 w-4 mr-2" />,
-    label: "Experience",
-  },
-  education: {
-    icon: <GraduationCap className="h-4 w-4 mr-2" />,
-    label: "Education",
-  },
-  skills: { icon: <Lightbulb className="h-4 w-4 mr-2" />, label: "Skills" },
-  projects: {
-    icon: <FolderKanban className="h-4 w-4 mr-2" />,
-    label: "Projects",
-  },
-  certificates: {
-    icon: <Award className="h-4 w-4 mr-2" />,
-    label: "Certificates",
-  },
-  languages: {
-    icon: <Languages className="h-4 w-4 mr-2" />,
-    label: "Languages",
-  },
-  interests: { icon: <Heart className="h-4 w-4 mr-2" />, label: "Interests" },
-  references: { icon: <Users className="h-4 w-4 mr-2" />, label: "References" },
-  publications: {
-    icon: <BookOpen className="h-4 w-4 mr-2" />,
-    label: "Publications",
-  },
-  awards: { icon: <Trophy className="h-4 w-4 mr-2" />, label: "Awards" },
-  volunteer: {
-    icon: <HeartHandshake className="h-4 w-4 mr-2" />,
-    label: "Volunteer",
-  },
-  customSections: {
-    icon: <PlusCircle className="h-4 w-4 mr-2" />,
-    label: "Custom",
-  },
-};
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("personalInfo");
@@ -93,7 +40,6 @@ export default function Home() {
 
   // Get data and methods from the store
   const resumeData = useResumeStore((state) => state.resumeData);
-  const activeSections = useResumeStore((state) => state.activeSections);
   const updatePersonalInfo = useResumeStore(
     (state) => state.updatePersonalInfo
   );
@@ -101,21 +47,36 @@ export default function Home() {
   const updateEducation = useResumeStore((state) => state.updateEducation);
   const updateSkills = useResumeStore((state) => state.updateSkills);
   const updateProjects = useResumeStore((state) => state.updateProjects);
-  /* const updateCertificates = useResumeStore(
-    (state) => state.updateCertificates
-  );
-  const updateLanguages = useResumeStore((state) => state.updateLanguages);
-  const updateInterests = useResumeStore((state) => state.updateInterests);
-  const updateReferences = useResumeStore((state) => state.updateReferences);
-  const updatePublications = useResumeStore(
-    (state) => state.updatePublications
-  );
-  const updateAwards = useResumeStore((state) => state.updateAwards);
-  const updateVolunteer = useResumeStore((state) => state.updateVolunteer);
-  const updateCustomSections = useResumeStore(
-    (state) => state.updateCustomSections
-  ); */
   const resetStore = useResumeStore((state) => state.resetStore);
+
+  // Define fixed tab sections
+  const tabSections = [
+    {
+      id: "personalInfo",
+      icon: <UserRound className="h-4 w-4 mr-2" />,
+      label: "Personal Info",
+    },
+    {
+      id: "experiences",
+      icon: <Briefcase className="h-4 w-4 mr-2" />,
+      label: "Experience",
+    },
+    {
+      id: "education",
+      icon: <GraduationCap className="h-4 w-4 mr-2" />,
+      label: "Education",
+    },
+    {
+      id: "skills",
+      icon: <Lightbulb className="h-4 w-4 mr-2" />,
+      label: "Skills",
+    },
+    {
+      id: "projects",
+      icon: <FolderKanban className="h-4 w-4 mr-2" />,
+      label: "Projects",
+    },
+  ];
 
   const togglePreview = () => {
     setShowPreview(!showPreview);
@@ -123,14 +84,27 @@ export default function Home() {
 
   // Find the next active section
   const findNextSection = (currentSection: string) => {
-    const currentIndex = activeSections.indexOf(currentSection);
-    if (currentIndex !== -1 && currentIndex < activeSections.length - 1) {
-      return activeSections[currentIndex + 1];
+    const currentIndex = tabSections.findIndex(
+      (section) => section.id === currentSection
+    );
+    if (currentIndex !== -1 && currentIndex < tabSections.length - 1) {
+      return tabSections[currentIndex + 1].id;
     }
     return null;
   };
 
-  // Add these functions:
+  // Find the previous active section
+  const findPrevSection = (currentSection: string) => {
+    const currentIndex = tabSections.findIndex(
+      (section) => section.id === currentSection
+    );
+    if (currentIndex > 0) {
+      return tabSections[currentIndex - 1].id;
+    }
+    return null;
+  };
+
+  // Export and import functionality
   const exportResumeData = () => {
     const data = JSON.stringify(resumeData);
     const blob = new Blob([data], { type: "application/json" });
@@ -155,24 +129,11 @@ export default function Home() {
         updateSkills(data.skillGroups);
         // Update optional sections as needed
         if (data.projects) updateProjects(data.projects);
-        // etc. for other sections
-
-        // Add success message
       } catch (error) {
         console.error("Error importing data:", error);
-        // Show error message
       }
     };
     reader.readAsText(file);
-  };
-
-  // Find the previous active section
-  const findPrevSection = (currentSection: string) => {
-    const currentIndex = activeSections.indexOf(currentSection);
-    if (currentIndex > 0) {
-      return activeSections[currentIndex - 1];
-    }
-    return null;
   };
 
   // Navigation handlers
@@ -193,9 +154,10 @@ export default function Home() {
     }
   };
 
-  // Get the index of the current tab to calculate whether to show "Preview Resume" or "Next"
+  // Check if current tab is the last one
   const isLastTab =
-    activeSections.indexOf(activeTab) === activeSections.length - 1;
+    tabSections.findIndex((section) => section.id === activeTab) ===
+    tabSections.length - 1;
 
   return (
     <div className="container mx-auto p-6">
@@ -253,11 +215,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Section Manager */}
-      <div className="mb-6">
-        <SectionManager />
-      </div>
-
       <ErrorBoundary>
         {showPreview ? (
           <ComprehensivePreview data={resumeData} />
@@ -269,20 +226,14 @@ export default function Home() {
               className="w-full"
             >
               <TabsList className="flex flex-wrap mb-6 h-auto">
-                {activeSections.map((section) => (
+                {tabSections.map((section) => (
                   <TabsTrigger
-                    key={section}
-                    value={section}
+                    key={section.id}
+                    value={section.id}
                     className="flex items-center"
                   >
-                    {
-                      sectionTabData[section as keyof typeof sectionTabData]
-                        ?.icon
-                    }
-                    {
-                      sectionTabData[section as keyof typeof sectionTabData]
-                        ?.label
-                    }
+                    {section.icon}
+                    {section.label}
                   </TabsTrigger>
                 ))}
               </TabsList>
@@ -309,33 +260,30 @@ export default function Home() {
                 />
               </TabsContent>
 
-              {
-                <TabsContent value="skills">
-                  <Skills
-                    onSubmit={({ skillGroups }) => updateSkills(skillGroups)}
-                    defaultValues={{ skillGroups: resumeData.skillGroups }}
-                  />
-                </TabsContent>
-              }
+              <TabsContent value="skills">
+                <Skills
+                  onSubmit={({ skillGroups }) => updateSkills(skillGroups)}
+                  defaultValues={{ skillGroups: resumeData.skillGroups }}
+                />
+              </TabsContent>
 
-              {/* Optional Sections */}
               <TabsContent value="projects">
                 <Projects
                   onSubmit={({ projects }) => updateProjects(projects)}
                   defaultValues={{ projects: resumeData.projects || [] }}
                 />
               </TabsContent>
-
-              {/* Other optional sections content will go here */}
-              {/* For brevity, I'm not implementing all the optional section components */}
-              {/* You would add TabsContent for each optional section here */}
             </Tabs>
 
             <div className="mt-6 flex justify-between">
               <Button
                 variant="outline"
                 onClick={handlePrevious}
-                disabled={activeSections.indexOf(activeTab) === 0}
+                disabled={
+                  tabSections.findIndex(
+                    (section) => section.id === activeTab
+                  ) === 0
+                }
               >
                 Previous
               </Button>
