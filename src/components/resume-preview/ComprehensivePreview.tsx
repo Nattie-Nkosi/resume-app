@@ -19,6 +19,8 @@ import {
   Palette,
   Layout,
   Loader2,
+  Menu,
+  X,
 } from "lucide-react";
 import {
   Tooltip,
@@ -50,6 +52,7 @@ const ComprehensivePreview: React.FC<ComprehensivePreviewProps> = ({
   const [selectedTheme, setSelectedTheme] = useState<ThemeKey>("classic");
   const [selectedLayout, setSelectedLayout] = useState<LayoutType>("compact");
   const [isExporting, setIsExporting] = useState(false);
+  const [showControls, setShowControls] = useState(false);
   const resumeRef = useRef<HTMLDivElement>(null);
   const printRef = useRef<HTMLDivElement>(null);
   const theme: ThemeStyles = colorThemes[selectedTheme];
@@ -101,15 +104,40 @@ const ComprehensivePreview: React.FC<ComprehensivePreviewProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row justify-between gap-4 mb-6 print:hidden">
-        <div className="flex flex-col sm:flex-row gap-2">
+      {/* Mobile Controls Toggle */}
+      <div className="md:hidden flex justify-end mb-2 print:hidden">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowControls(!showControls)}
+          aria-label="Toggle controls"
+        >
+          {showControls ? (
+            <X className="h-4 w-4" />
+          ) : (
+            <Menu className="h-4 w-4" />
+          )}
+          <span className="ml-2">
+            {showControls ? "Hide Options" : "Show Options"}
+          </span>
+        </Button>
+      </div>
+
+      {/* Controls - Responsive Container */}
+      <div
+        className={`flex flex-col gap-4 mb-6 print:hidden ${
+          showControls ? "block" : "hidden md:block"
+        }`}
+      >
+        {/* Theme & Layout Selectors - Stack on mobile, row on larger screens */}
+        <div className="flex flex-col md:flex-row gap-4 md:gap-6 w-full md:items-center">
           <div className="flex items-center">
-            <Palette className="mr-2 h-4 w-4" />
+            <Palette className="mr-2 h-4 w-4 flex-shrink-0" />
             <Select
               defaultValue={selectedTheme}
               onValueChange={(value) => setSelectedTheme(value as ThemeKey)}
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select Theme" />
               </SelectTrigger>
               <SelectContent>
@@ -123,123 +151,177 @@ const ComprehensivePreview: React.FC<ComprehensivePreviewProps> = ({
           </div>
 
           <div className="flex items-center">
-            <Layout className="mr-2 h-4 w-4" />
+            <Layout className="mr-2 h-4 w-4 flex-shrink-0" />
             <Select
               defaultValue={selectedLayout}
               onValueChange={(value) => setSelectedLayout(value as LayoutType)}
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select Layout" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="compact">Compact</SelectItem>
                 <SelectItem value="standard">Standard</SelectItem>
-                <SelectItem value="elegant">Elegant</SelectItem>
-                <SelectItem value="modern">Modern</SelectItem>
+                {/* <SelectItem value="elegant">Elegant</SelectItem>
+                <SelectItem value="modern">Modern</SelectItem> */}
               </SelectContent>
             </Select>
           </div>
         </div>
 
-        <div className="flex gap-2">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" onClick={handlePrintDocument}>
-                  <Printer className="mr-2 h-4 w-4" />
-                  Print
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Print or save as PDF</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+        {/* Actions - Full width buttons on mobile */}
+        <div className="flex flex-col sm:flex-row gap-2 w-full">
+          {/* Mobile: Stack vertically at full width */}
+          <div className="sm:hidden w-full grid grid-cols-1 gap-2">
+            <Button
+              variant="outline"
+              onClick={handlePrintDocument}
+              className="w-full"
+            >
+              <Printer className="mr-2 h-4 w-4" />
+              Print
+            </Button>
 
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" onClick={handleCopyToClipboard}>
-                  <Copy className="mr-2 h-4 w-4" />
-                  Copy
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Copy content to clipboard</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+            <Button
+              variant="outline"
+              onClick={handleCopyToClipboard}
+              className="w-full"
+            >
+              <Copy className="mr-2 h-4 w-4" />
+              Copy Text
+            </Button>
 
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button onClick={handleExportPDF} disabled={isExporting}>
-                  {isExporting ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Exporting...
-                    </>
-                  ) : (
-                    <>
-                      <Download className="mr-2 h-4 w-4" />
-                      Export
-                    </>
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Export as PDF with current theme</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+            <Button
+              onClick={handleExportPDF}
+              disabled={isExporting}
+              className="w-full"
+            >
+              {isExporting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Exporting...
+                </>
+              ) : (
+                <>
+                  <Download className="mr-2 h-4 w-4" />
+                  Export PDF
+                </>
+              )}
+            </Button>
+          </div>
+
+          {/* Tablet/Desktop: Row with tooltips */}
+          <div className="hidden sm:flex sm:flex-row gap-2 sm:ml-auto">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" onClick={handlePrintDocument}>
+                    <Printer className="mr-2 h-4 w-4" />
+                    Print
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Print or save as PDF</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" onClick={handleCopyToClipboard}>
+                    <Copy className="mr-2 h-4 w-4" />
+                    Copy
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Copy content to clipboard</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button onClick={handleExportPDF} disabled={isExporting}>
+                    {isExporting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Exporting...
+                      </>
+                    ) : (
+                      <>
+                        <Download className="mr-2 h-4 w-4" />
+                        Export
+                      </>
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Export as PDF with current theme</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
         </div>
       </div>
 
+      {/* Tabs and Preview Content - Full width and responsive */}
       <Tabs defaultValue="preview" className="print:hidden">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="preview">
             <FileText className="mr-2 h-4 w-4" />
-            Preview
+            <span className="hidden xs:inline-block">Preview</span>
           </TabsTrigger>
           <TabsTrigger value="print-view">
             <Printer className="mr-2 h-4 w-4" />
-            Print View
+            <span className="hidden xs:inline-block">Print View</span>
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="preview">
-          {selectedLayout === "standard" && (
-            <StandardLayout data={data} theme={theme} ref={resumeRef} />
-          )}
-          {selectedLayout === "compact" && (
-            <CompactLayout data={data} theme={theme} ref={resumeRef} />
-          )}
-          {selectedLayout === "elegant" && (
-            <ElegantLayout data={data} theme={theme} ref={resumeRef} />
-          )}
-          {selectedLayout === "modern" && (
-            <ModernLayout data={data} theme={theme} ref={resumeRef} />
-          )}
+
+        <TabsContent value="preview" className="mx-auto">
+          <div className="max-w-full overflow-x-auto">
+            {selectedLayout === "standard" && (
+              <StandardLayout data={data} theme={theme} ref={resumeRef} />
+            )}
+            {selectedLayout === "compact" && (
+              <CompactLayout data={data} theme={theme} ref={resumeRef} />
+            )}
+            {selectedLayout === "elegant" && (
+              <ElegantLayout data={data} theme={theme} ref={resumeRef} />
+            )}
+            {selectedLayout === "modern" && (
+              <ModernLayout data={data} theme={theme} ref={resumeRef} />
+            )}
+          </div>
         </TabsContent>
+
         <TabsContent value="print-view">
-          <div className="bg-gray-100 p-8 rounded-lg">
+          <div className="bg-gray-100 p-2 sm:p-4 md:p-8 rounded-lg">
             <div
-              className="bg-white shadow-md pdf-preview-container pdf-links pdf-content pdf-image-quality"
+              className="bg-white shadow-md pdf-preview-container pdf-links pdf-content pdf-image-quality w-full max-w-full overflow-auto"
               ref={printRef}
             >
-              {selectedLayout === "standard" && (
-                <StandardLayout data={data} theme={theme} isPrintView={true} />
-              )}
-              {selectedLayout === "compact" && (
-                <CompactLayout data={data} theme={theme} isPrintView={true} />
-              )}
-              {selectedLayout === "elegant" && (
-                <ElegantLayout data={data} theme={theme} isPrintView={true} />
-              )}
-              {selectedLayout === "modern" && (
-                <ModernLayout data={data} theme={theme} isPrintView={true} />
-              )}
+              <div className="transform-origin-top scale-[0.85] sm:scale-[0.9] md:scale-100">
+                {selectedLayout === "standard" && (
+                  <StandardLayout
+                    data={data}
+                    theme={theme}
+                    isPrintView={true}
+                  />
+                )}
+                {selectedLayout === "compact" && (
+                  <CompactLayout data={data} theme={theme} isPrintView={true} />
+                )}
+                {selectedLayout === "elegant" && (
+                  <ElegantLayout data={data} theme={theme} isPrintView={true} />
+                )}
+                {selectedLayout === "modern" && (
+                  <ModernLayout data={data} theme={theme} isPrintView={true} />
+                )}
+              </div>
             </div>
-            <div className="text-center mt-4 text-gray-500">
+            <div className="text-center mt-4 text-gray-500 text-xs sm:text-sm">
               <p>
                 A4 Size Preview (Single Page) - Print or Export for Best Results
               </p>
@@ -248,6 +330,7 @@ const ComprehensivePreview: React.FC<ComprehensivePreviewProps> = ({
         </TabsContent>
       </Tabs>
 
+      {/* Print container - Only shown when printing */}
       <div className="hidden print:block print-container">
         {selectedLayout === "standard" && (
           <StandardLayout data={data} theme={theme} isPrintView={true} />

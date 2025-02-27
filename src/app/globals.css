@@ -261,6 +261,54 @@
   .pdf-export-ready th {
     padding: 2px 4px !important;
   }
+
+  /* Custom breakpoint for extra small screens */
+  @media (min-width: 475px) {
+    .xs\:inline-block {
+      display: inline-block;
+    }
+  }
+
+  /* Responsive resume preview container */
+  .pdf-preview-container {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  @media print {
+    /* Ensure proper print layout */
+    .print-container {
+      width: 100%;
+      padding: 0;
+      margin: 0;
+    }
+  }
+
+  /* Ensure preview fits on small screens */
+  @media (max-width: 640px) {
+    .pdf-preview-container {
+      padding: 10px;
+    }
+
+    /* Make sure font sizes are readable on mobile */
+    .pdf-container h1 {
+      font-size: 18px !important;
+    }
+
+    .pdf-container h2 {
+      font-size: 16px !important;
+    }
+
+    .pdf-container p,
+    .pdf-container div {
+      font-size: 12px !important;
+    }
+  }
+
+  /* Proper scaling for the print view */
+  .transform-origin-top {
+    transform-origin: top center;
+  }
   body {
     @apply bg-background text-foreground;
   }
