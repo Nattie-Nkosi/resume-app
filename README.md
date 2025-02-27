@@ -2,7 +2,8 @@
 
 A modern, intuitive web application for creating professional resumes quickly and easily. Built with Next.js, TypeScript, and Tailwind CSS.
 
-![Resume Builder Screenshot](https://imgur.com/a/RsoRfzw)
+![Resume Builder Screenshot](https://github.com/user-attachments/assets/1ba5b354-0329-40f1-8b24-34ad41b4cbf3)
+
 
 ## 🌟 Features
 
