@@ -275,7 +275,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
                     <FormItem>
                       <FormLabel className="flex items-center gap-2">
                         <LinkedinIcon className="w-4 h-4" />
-                        LinkedIn
+                        LinkedIn (optional)
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -295,7 +295,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
                     <FormItem>
                       <FormLabel className="flex items-center gap-2">
                         <GithubIcon className="w-4 h-4" />
-                        GitHub
+                        GitHub (optional)
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -315,7 +315,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
                     <FormItem>
                       <FormLabel className="flex items-center gap-2">
                         <Globe className="w-4 h-4" />
-                        Portfolio Website
+                        Portfolio Website (optional)
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -335,7 +335,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
                     <FormItem>
                       <FormLabel className="flex items-center gap-2">
                         <Link2 className="w-4 h-4" />
-                        Additional Link
+                        Additional Link (optional)
                       </FormLabel>
                       <FormControl>
                         <Input placeholder="https://..." {...field} />
