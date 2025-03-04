@@ -88,19 +88,15 @@ const CoverLetterPage: React.FC = () => {
   };
 
   // Handle PDF download
-  /* const handleDownloadPDF = async () => {
+  /*   const handleDownloadPDF = async () => {
     try {
       setIsDownloadingPDF(true);
-      const { generateCoverLetterPDF } = await import(
-        "@/utils/cover-letter-pdf-generator"
-      );
+      const { generateCoverLetterPDF } = await import('@/utils/cover-letter-pdf-generator');
       await generateCoverLetterPDF(coverLetter, personalInfo);
     } catch (error) {
-      console.error("Error generating PDF:", error);
+      console.error('Error generating PDF:', error);
       // Show a more user-friendly error message with specific troubleshooting advice
-      alert(
-        "There was a problem generating your PDF. Please ensure all fields are filled out correctly and try again."
-      );
+      alert('There was a problem generating your PDF. Please ensure all fields are filled out correctly and try again.');
     } finally {
       setIsDownloadingPDF(false);
     }
@@ -318,6 +314,7 @@ const CoverLetterPage: React.FC = () => {
           defaultValue="edit"
           value={activeTab}
           onValueChange={(v) => setActiveTab(v as "edit" | "preview")}
+          className="bg-background"
         >
           <TabsList className="grid w-full grid-cols-2 mb-6">
             <TabsTrigger value="edit" className="flex items-center">

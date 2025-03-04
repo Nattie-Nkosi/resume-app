@@ -80,14 +80,14 @@ const CoverLetterPreview: React.FC<CoverLetterPreviewProps> = ({
       case "modern":
         return {
           container: "font-sans",
-          header: "border-b-2 border-gray-300 pb-4 mb-6",
+          header: "border-b-2 border-muted pb-4 mb-6",
           body: "space-y-4 leading-relaxed",
           fontClass: "font-sans",
         };
       case "creative":
         return {
           container: "font-serif",
-          header: "border-l-4 border-blue-500 pl-4 mb-6",
+          header: "border-l-4 border-primary pl-4 mb-6",
           body: "space-y-4 leading-loose",
           fontClass: "font-serif",
         };
@@ -170,12 +170,12 @@ const CoverLetterPreview: React.FC<CoverLetterPreviewProps> = ({
       {/* Cover Letter Preview */}
       <Card
         className={cn(
-          "p-8 max-w-full bg-white print:shadow-none",
+          "p-8 max-w-full bg-card print:shadow-none",
           templateStyles.container,
           isPrinting ? "print-mode" : ""
         )}
       >
-        <div ref={previewRef} className="space-y-6">
+        <div ref={previewRef} className="space-y-6 text-card-foreground">
           {/* Sender Information */}
           <div className="text-right mb-8">
             <p className="font-bold">{personalInfo.fullName}</p>
@@ -242,6 +242,8 @@ const CoverLetterPreview: React.FC<CoverLetterPreviewProps> = ({
           .print-mode,
           .print-mode * {
             visibility: visible;
+            color: black !important;
+            background-color: white !important;
           }
           .print-mode {
             position: absolute;
