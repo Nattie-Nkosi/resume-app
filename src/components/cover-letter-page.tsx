@@ -36,6 +36,7 @@ const CoverLetterPage: React.FC = () => {
   const [saveName, setSaveName] = useState<string>("");
   const [saveDialogOpen, setSaveDialogOpen] = useState<boolean>(false);
   const [isExporting, setIsExporting] = useState<boolean>(false);
+  //const [isDownloadingPDF, setIsDownloadingPDF] = useState<boolean>(false);
   const [showSavedLetters, setShowSavedLetters] = useState<boolean>(false);
 
   // Cover letter store
@@ -86,6 +87,25 @@ const CoverLetterPage: React.FC = () => {
     reader.readAsText(file);
   };
 
+  // Handle PDF download
+  /* const handleDownloadPDF = async () => {
+    try {
+      setIsDownloadingPDF(true);
+      const { generateCoverLetterPDF } = await import(
+        "@/utils/cover-letter-pdf-generator"
+      );
+      await generateCoverLetterPDF(coverLetter, personalInfo);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      // Show a more user-friendly error message with specific troubleshooting advice
+      alert(
+        "There was a problem generating your PDF. Please ensure all fields are filled out correctly and try again."
+      );
+    } finally {
+      setIsDownloadingPDF(false);
+    }
+  }; */
+
   // Handle save dialog submit
   const handleSave = () => {
     if (saveName.trim()) {
@@ -134,16 +154,17 @@ const CoverLetterPage: React.FC = () => {
               variant="outline"
               size="sm"
               disabled={isExporting}
+              className="gap-2"
             >
               {isExporting ? (
                 <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                   Exporting...
                 </>
               ) : (
                 <>
-                  <Download className="h-4 w-4 mr-2" />
-                  Export
+                  <Download className="h-4 w-4" />
+                  Export JSON
                 </>
               )}
             </Button>

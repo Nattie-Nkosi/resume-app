@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CoverLetter } from "@/types/coverletter";
 import { format } from "date-fns";
-import { Download, Printer, Copy } from "lucide-react";
+import { Download, Printer, Copy, Loader2 } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -29,6 +29,7 @@ const CoverLetterPreview: React.FC<CoverLetterPreviewProps> = ({
   personalInfo,
 }) => {
   const [isPrinting, setIsPrinting] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
   // Function to handle printing
@@ -55,10 +56,22 @@ const CoverLetterPreview: React.FC<CoverLetterPreviewProps> = ({
   };
 
   // Function to download as PDF
-  const handleDownload = () => {
-    alert("PDF download functionality would be implemented here");
-    // This would typically use a library like jsPDF or html2pdf
-    // to convert the HTML content to a PDF and trigger a download
+  const handleDownload = async () => {
+    try {
+      setIsDownloading(true);
+      const { generateCoverLetterPDF } = await import(
+        "@/utils/cover-letter-pdf-generator"
+      );
+      await generateCoverLetterPDF(coverLetter, personalInfo);
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      // Show a more user-friendly error message
+      alert(
+        "There was a problem generating your PDF. Please check your cover letter content and try again."
+      );
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   // Get template-specific styles
@@ -133,9 +146,18 @@ const CoverLetterPreview: React.FC<CoverLetterPreviewProps> = ({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button onClick={handleDownload}>
-                <Download className="mr-2 h-4 w-4" />
-                Download PDF
+              <Button onClick={handleDownload} disabled={isDownloading}>
+                {isDownloading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Generating PDF...
+                  </>
+                ) : (
+                  <>
+                    <Download className="mr-2 h-4 w-4" />
+                    Download PDF
+                  </>
+                )}
               </Button>
             </TooltipTrigger>
             <TooltipContent>
