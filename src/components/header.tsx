@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { FileText, Github, Menu, X } from "lucide-react";
+import { FileText, Github, Menu, X, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "./mode-toggle";
 
@@ -59,6 +59,15 @@ const Header = () => {
                 className="text-sm font-medium transition-colors hover:text-primary"
               >
                 Guide
+              </Link>
+              <Link
+                href="/cover-letter"
+                className="text-sm font-medium transition-colors hover:text-primary"
+              >
+                <span className="flex items-center">
+                  <Mail className="h-4 w-4 mr-1" />
+                  Cover Letter
+                </span>
               </Link>
             </div>
 
@@ -127,6 +136,16 @@ const Header = () => {
             >
               Guide
             </Link>
+            <Link
+              href="/cover-letter"
+              className="text-sm font-medium transition-colors hover:text-primary"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <span className="flex items-center">
+                <Mail className="h-4 w-4 mr-1" />
+                Cover Letter
+              </span>
+            </Link>
             <div className="pt-2 border-t border-border w-24 flex justify-center">
               <Button
                 variant="outline"
@@ -135,7 +154,7 @@ const Header = () => {
                 className="gap-2 mt-2"
               >
                 <Link
-                  href="https://github.com/yourusername/resume-builder"
+                  href="https://github.com/Nattie-Nkosi/resume-app"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
