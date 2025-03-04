@@ -1,5 +1,3 @@
-// src/types/coverletter.ts
-
 export interface CoverLetter {
   // Header information
   recipientName: string;
